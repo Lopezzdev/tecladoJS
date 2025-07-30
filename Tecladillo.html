@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecladillo</title>
+
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/70/70948.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+
+    <div id="contCanvas">
+        <div id="botones">
+            <div id="contOndas">
+                <div id="parte1">
+                    <div class="boton" id="botSeno"></div>
+                    <div class="boton" id="botCuadrada"></div>
+                    <div class="boton" id="botTriangular"></div>
+                </div>
+                <div id="parte2">
+                    <div class="boton" id="botRandom">Rand.</div>
+                    <div class="boton" id="botRuido"></div>
+                    <div class="boton" id="botCustom">Custom</div>
+                </div>  
+            </div>
+            <div id="contOctavas">
+                <div class="boton" id="subirOctava"></div>
+                <div class="boton" id="bajarOctava"></div>
+            </div>
+            <div id="contTrans">
+                <div class="boton" id="mas1st">+1st</div>
+                <div class="boton" id="menos1st">-1st</div>
+            </div>
+            <div id="contEnv">
+                <div class="boton" id="botAmp1">Amp</div>
+            </div>
+        </div>
+
+        <canvas id="teclado" height="206" width="753"></canvas>
+
+        <!-- <canvas id="amp1" height="102" width="375"></canvas> -->
+        <canvas id="amp1" height="102" width="702"></canvas>
+        <div id="trans">0st</div>
+        <canvas id="custom" height="202" width="702"></canvas>
+
+    </div>    
+
+    <div id="debug"></div>
+    <div id="debug2"></div>
+
+    <canvas id="canvaPrueba" height="200" width="1000"></canvas>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

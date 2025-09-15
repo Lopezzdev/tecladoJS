@@ -393,7 +393,7 @@ async function agregarReverb(){
   reverbWet=audioCtx.createGain();
 
   reverbGain.gain.value=1;
-  reverbRes=await loadIR(`../media/reverb${selecRev}.wav`);
+  reverbRes=await loadIR(`./media/reverb${selecRev}.wav`);
   reverbConv.buffer=reverbRes;
 }
 

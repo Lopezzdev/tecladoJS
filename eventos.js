@@ -1,0 +1,241 @@
+let arrayCanvas=["env","custom","ecu"];
+
+//Leer entrada de teclado
+document.addEventListener("keydown",(event)=>{
+  for(i=0;i<letras.length;i++){
+    if(event.key==letras[i]&&!apretando[i])reproducir(i);
+  }
+  for(i=0;i<letras2.length;i++){
+    if(event.key==letras2[i]&&!apretando[i+12])reproducir(i+12);
+  }
+
+  // console.log(event.key);
+
+  if(event.key=="ArrowUp"){if(octava<5){octava++;crearArrays();}}
+  if(event.key=="ArrowDown"){if(octava>0){octava--;crearArrays();}}
+  if(event.key=="ArrowRight"){indiceOnda++;if(indiceOnda>5)indiceOnda=0;mostrarCustom();crearArrays();}
+  if(event.key=="ArrowLeft"){indiceOnda--;if(indiceOnda<0)indiceOnda=5;mostrarCustom();crearArrays();}
+
+  muestreo();
+})
+document.addEventListener("keyup",(event)=>{
+  for(i=0;i<letras.length;i++){
+    if(event.key==letras[i])detener(i);
+  }
+  for(i=0;i<letras2.length;i++){
+    if(event.key==letras2[i])detener(i+12);
+  }
+  muestreo();
+})
+
+document.querySelector("#botSeno").addEventListener("mousedown",()=>{indiceOnda=0;mostrarCustom();crearArrays();});
+document.querySelector("#botCuadrada").addEventListener("mousedown",()=>{indiceOnda=1;mostrarCustom();crearArrays();});
+document.querySelector("#botTriangular").addEventListener("mousedown",()=>{indiceOnda=2;mostrarCustom();crearArrays();});
+document.querySelector("#botRandom").addEventListener("mousedown",()=>{indiceOnda=3;mostrarCustom();crearArrays();});
+document.querySelector("#botRuido").addEventListener("mousedown",()=>{indiceOnda=4;mostrarCustom();crearArrays();});
+document.querySelector("#botCustom").addEventListener("mousedown",()=>{indiceOnda=5;mostrarCustom();crearArrays();});
+document.querySelector("#subirOctava").addEventListener("mousedown",()=>{if(octava<5){octava++;crearArrays();}});
+document.querySelector("#bajarOctava").addEventListener("mousedown",()=>{if(octava>0){octava--;crearArrays();}});
+
+document.addEventListener("mouseup",()=>{
+  document.querySelector("#env").removeEventListener("mousemove",clickEnv1);triggerAmp1=false;
+  document.querySelector("#custom").removeEventListener("mousemove",clickCustom);triggerCustom=false;
+  document.querySelector("#ancho").removeEventListener("mousemove",clickAncho);
+  document.querySelector("#efectos").removeEventListener("mousemove",clickFX);
+  crearArrays();
+  silenciar();
+});
+
+document.querySelector("#botAmp1").addEventListener("mousedown",()=>{
+
+  if(indiceEnv!=1)indiceEnv=1;
+  else indiceEnv=0
+
+  if(indiceEnv==1){
+    document.querySelector("#env").style.cssText="top:-102px;transition:top 0.5s;";
+    document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:-90px;left:-20px;transition:top 0.5s,left 0.5s;";
+    boolCustom=false;
+    muestreoEnv1();
+  }
+  else{
+    document.querySelector("#env").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";  
+  }
+  
+})
+document.querySelector("#botLow1").addEventListener("mousedown",()=>{
+  
+  if(indiceEnv!=2)indiceEnv=2;
+  else indiceEnv=0
+
+  if(indiceEnv==2){
+    document.querySelector("#env").style.cssText="top:-142px;transition:top 0.5s;";
+    document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:-130px;left:-20px;transition:top 0.5s,left 0.5s;";
+    boolCustom=false;
+    muestreoEnv1();
+  }
+  else{
+    document.querySelector("#env").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";  
+  }
+})
+document.querySelector("#botHigh1").addEventListener("mousedown",()=>{
+  
+  if(indiceEnv!=3)indiceEnv=3;
+  else indiceEnv=0;
+  
+  if(indiceEnv==3){
+    document.querySelector("#env").style.cssText="top:-142px;transition:top 0.5s;";
+    document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:-130px;left:-20px;transition:top 0.5s,left 0.5s;";
+    boolCustom=false;
+    muestreoEnv1();
+  }
+  else{
+    document.querySelector("#env").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";  
+  }
+})
+document.querySelector("#botFX").addEventListener("mousedown",()=>{
+  
+  if(indiceEnv!=5)indiceEnv=5;
+  else indiceEnv=0;
+  
+  if(indiceEnv==5){
+    document.querySelector("#env").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#efectos").style.cssText="top:-202px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:-181px;left:-20px;transition:top 0.5s,left 0.5s;";
+    boolCustom=false;
+    muestreoEcu();
+  }
+  else{
+    document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";  
+  }
+})
+document.querySelector("#botEQ1").addEventListener("mousedown",()=>{
+  
+  if(indiceEnv!=4)indiceEnv=4;
+  else indiceEnv=0;
+  
+  if(indiceEnv==4){
+    document.querySelector("#env").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#ecu").style.cssText="top:-202px;transition:top 0.5s;";
+    document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:-121px;left:-20px;transition:top 0.5s,left 0.5s;";
+    boolCustom=false;
+    muestreoEcu();
+  }
+  else{
+    document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
+    document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";  
+  }
+})
+
+document.querySelector("#mas1st").addEventListener("mousedown",()=>transponer(1));
+document.querySelector("#menos1st").addEventListener("mousedown",()=>transponer(-1));
+
+
+// document.querySelector("#teclado").addEventListener("mousedown",clickear);
+// document.querySelector("#teclado").addEventListener("mouseup",silenciar);
+
+document.querySelector("#env").addEventListener("mousedown",()=>{
+  clickEnv1();
+  document.querySelector("#env").addEventListener("mousemove",clickEnv1);
+});
+document.querySelector("#env").addEventListener("mouseup",()=>{
+  document.querySelector("#env").removeEventListener("mousemove",clickEnv1);
+  triggerAmp1=false;
+});
+
+document.querySelector("#custom").addEventListener("mousedown",()=>{
+  clickCustom();
+  document.querySelector("#custom").addEventListener("mousemove",clickCustom);
+});
+document.querySelector("#custom").addEventListener("mouseup",()=>{
+  document.querySelector("#custom").removeEventListener("mousemove",clickCustom);
+  crearArrays();
+  triggerCustom=false;
+});
+
+document.querySelector("#ancho").addEventListener("mousedown",()=>{
+  clickAncho();
+  document.querySelector("#ancho").addEventListener("mousemove",clickAncho);
+});
+document.querySelector("#ancho").addEventListener("mouseup",()=>{
+  document.querySelector("#ancho").removeEventListener("mousemove",clickAncho);
+});
+
+document.querySelector("#ecu").addEventListener("mousedown",()=>{
+  indiceEcu=null;
+  document.querySelector("#ecu").addEventListener("mousemove",clickEcu);
+})
+document.querySelector("#ecu").addEventListener("mouseup",()=>{
+  document.querySelector("#ecu").removeEventListener("mousemove",clickEcu);
+  indiceEcu=null;
+})
+
+document.querySelector("#efectos").addEventListener("mousedown",()=>{
+  clickFX();
+  document.querySelector("#efectos").addEventListener("mousemove",clickFX);
+})
+document.querySelector("#efectos").addEventListener("mouseup",()=>{
+  document.querySelector("#efectos").removeEventListener("mousemove",clickFX);
+  indiceFX=-1;triggerFX=false;
+})
+
+document.querySelector("#ecu").addEventListener("dblclick",()=>{
+    let rect = canvasEcu.getBoundingClientRect();
+
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
+
+    for(i=0;i<cantidadFiltros;i++)if(mouseX>=Xfiltros[i]-6&&mouseX<=Xfiltros[i]+6&&mouseY>=Yfiltros[i]-6&&mouseY<=Yfiltros[i]+6){
+        boolFiltros[i]=!boolFiltros[i];
+    }
+    muestreoEcu();
+
+  if(!boolFiltros[0]){filtros[0].Q.value=0;filtros[0].frequency.value=0;}
+  if(!boolFiltros[1]){filtros[1].gain.value=0;}
+  if(!boolFiltros[2]){filtros[2].gain.value=0;}
+  if(!boolFiltros[3]){filtros[3].Q.value=0;filtros[3].frequency.value=24000;}
+
+});
+
+document.querySelector("#ecu").addEventListener("wheel", (event) => {
+
+    let rect = canvasEcu.getBoundingClientRect();
+
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
+
+    for(i=1;i<3;i++)if(mouseX>=Xfiltros[i]-6&&mouseX<=Xfiltros[i]+6&&mouseY>=Yfiltros[i]-6&&mouseY<=Yfiltros[i]+6){
+
+        if(Qfiltros[i]>1)Qfiltros[i]+=event.deltaY/200;
+        else{Qfiltros[i]+=event.deltaY/3000;}
+
+        if(Qfiltros[i]<0.1)Qfiltros[i]=0.1;
+        if(Qfiltros[i]>20)Qfiltros[i]=20;
+
+        filtros[i].Q.value=Qfiltros[i];
+        
+    }
+
+    muestreoEcu();
+
+},{passive:false});
+
+// document.querySelector("#debug").addEventListener("mousedown",funcionDebug1);
+// document.querySelector("#debug2").addEventListener("mousedown",reproducir2);
+// document.querySelector("#debug2").addEventListener("mouseup",()=>{sources[0].stop();});

@@ -118,10 +118,9 @@ canvas{
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
-#custom{
+#custom,#ecu,#efectos{
     position:absolute;
     z-index: 0;
-    /* top:-202px; */
     top:0px;
     left: 20px;
     background-color: rgb(12, 12, 12);
@@ -141,17 +140,19 @@ canvas{
     flex-direction: column;
     justify-content: center;
 }
-#contEnv,#contTrans,#contOndas{
+#contEnv,#contTrans,#contOndas,#contFX{
     font-size: 16px;
     font-weight: 900;
     justify-content: center;
     align-items: center;
 }
 
+#contTrans{flex-direction: column;}
+
 #trans{
     position:absolute;
     top:0px;
-    left:490px;
+    left:372px;
     font-weight: 600;
     display: flex;
     justify-content: center;
@@ -159,7 +160,7 @@ canvas{
     color: rgba(122, 31, 31, 0.6);
     height: 30px;
     width: 50px;
-    background-color: rgb(12, 12, 12);
+    background-color: rgb(6, 6, 6);
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
     z-index: 1;
@@ -189,6 +190,23 @@ canvas{
     z-index: 0;
 }
 
+#contEnv{
+    flex-direction:column;
+}
+#contEnv>div{
+    display: flex;
+}
+#botLow1,#botHigh1,#botAmp1,#botEQ1{
+    width: 75px;
+}
+
+
+
+
+
+/* #ecu{top:-202px;} */
+/* #efectos{top:-202px;} */
+
 #debug,#debug2,#debug3{
     /* width: 50px; */
     text-align: center;
@@ -205,5 +223,5 @@ canvas{
 #canvaPrueba{
     margin-top: 20px;
     background-color: #141414;
-    /* display: none; */
+    display: none;
 }

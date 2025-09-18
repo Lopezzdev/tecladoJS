@@ -56,6 +56,7 @@ document.querySelector("#botAmp1").addEventListener("mousedown",()=>{
     document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    // document.querySelector("#instrumentos").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#refrescar").style.cssText="top:-90px;left:-20px;transition:top 0.5s,left 0.5s;";
     boolCustom=false;
     muestreoEnv1();
@@ -76,6 +77,7 @@ document.querySelector("#botLow1").addEventListener("mousedown",()=>{
     document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    // document.querySelector("#instrumentos").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#refrescar").style.cssText="top:-130px;left:-20px;transition:top 0.5s,left 0.5s;";
     boolCustom=false;
     muestreoEnv1();
@@ -95,6 +97,7 @@ document.querySelector("#botHigh1").addEventListener("mousedown",()=>{
     document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    // document.querySelector("#instrumentos").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#refrescar").style.cssText="top:-130px;left:-20px;transition:top 0.5s,left 0.5s;";
     boolCustom=false;
     muestreoEnv1();
@@ -114,6 +117,7 @@ document.querySelector("#botFX").addEventListener("mousedown",()=>{
     document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#efectos").style.cssText="top:-202px;transition:top 0.5s;";
+    // document.querySelector("#instrumentos").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#refrescar").style.cssText="top:-181px;left:-20px;transition:top 0.5s,left 0.5s;";
     boolCustom=false;
     muestreoEcu();
@@ -133,6 +137,7 @@ document.querySelector("#botEQ1").addEventListener("mousedown",()=>{
     document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#ecu").style.cssText="top:-202px;transition:top 0.5s;";
     document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+    // document.querySelector("#instrumentos").style.cssText="top:0px;transition:top 0.5s;";
     document.querySelector("#refrescar").style.cssText="top:-121px;left:-20px;transition:top 0.5s,left 0.5s;";
     boolCustom=false;
     muestreoEcu();
@@ -142,6 +147,25 @@ document.querySelector("#botEQ1").addEventListener("mousedown",()=>{
     document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";  
   }
 })
+// document.querySelector("#botInst").addEventListener("mousedown",()=>{
+  
+//   if(indiceEnv!=6)indiceEnv=6;
+//   else indiceEnv=0;
+  
+//   if(indiceEnv==6){
+//     document.querySelector("#env").style.cssText="top:0px;transition:top 0.5s;";
+//     document.querySelector("#custom").style.cssText="top:0px;transition:top 0.5s;";
+//     document.querySelector("#ecu").style.cssText="top:0px;transition:top 0.5s;";
+//     document.querySelector("#efectos").style.cssText="top:0px;transition:top 0.5s;";
+//     document.querySelector("#instrumentos").style.cssText="top:-100px;transition:top 0.5s;";
+//     document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";
+//     boolCustom=false;
+//   }
+//   else{
+//     document.querySelector("#instrumentos").style.cssText="top:0px;transition:top 0.5s;";
+//     document.querySelector("#refrescar").style.cssText="top:0px;left:40px;transition:top 0.5s,left 0.5s;";  
+//   }
+// })
 
 document.querySelector("#mas1st").addEventListener("mousedown",()=>transponer(1));
 document.querySelector("#menos1st").addEventListener("mousedown",()=>transponer(-1));

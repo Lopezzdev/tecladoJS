@@ -195,7 +195,7 @@ function muestreoEcu(){
     ctxEcu.fillText(`${textoGuias[i]}`, guias[i]-(5*textoGuias[i].length)+5, 197);
   }
 
-
+  //Primer filtro
   ctxEcu.beginPath();
 
   if(boolFiltros[0]){ctxEcu.strokeStyle="rgb(110, 20, 20)";ctxEcu.lineWidth=4;}
@@ -209,6 +209,7 @@ function muestreoEcu(){
   ctxEcu.lineTo(702,101);
   ctxEcu.stroke();
 
+  //Segundo filtro
   ctxEcu.beginPath();
 
   if(boolFiltros[1]){ctxEcu.strokeStyle="rgb(110,20,20)";ctxEcu.lineWidth=4;}
@@ -216,12 +217,13 @@ function muestreoEcu(){
   
   x=Xfiltros[1],y=Yfiltros[1];q=Qfiltros[1];
   ctxEcu.moveTo(0,101);
-  ctxEcu.lineTo(x-30/q,101);
+  ctxEcu.lineTo(x-20/q,101);
   ctxEcu.bezierCurveTo(x, 101,x-1/q,y, x, y);
-  ctxEcu.bezierCurveTo(x+1/q, y,x,101, x+30/q, 101);
+  ctxEcu.bezierCurveTo(x+1/q, y,x,101, x+20/q, 101);
   ctxEcu.lineTo(702,101);
   ctxEcu.stroke();
 
+  //Tercer filtro
   ctxEcu.beginPath();
 
   if(boolFiltros[2]){ctxEcu.strokeStyle="rgba(110,20,20)";ctxEcu.lineWidth=4;}
@@ -229,9 +231,9 @@ function muestreoEcu(){
   
   x=Xfiltros[2],y=Yfiltros[2];q=Qfiltros[2];
   ctxEcu.moveTo(0,101);
-  ctxEcu.lineTo(x-30/q,101);
+  ctxEcu.lineTo(x-20/q,101);
   ctxEcu.bezierCurveTo(x, 101,x-1/q,y, x, y);
-  ctxEcu.bezierCurveTo(x+1/q, y,x,101, x+30/q, 101);
+  ctxEcu.bezierCurveTo(x+1/q, y,x,101, x+20/q, 101);
   ctxEcu.lineTo(702,101);
   ctxEcu.stroke();
 
@@ -242,6 +244,7 @@ function muestreoEcu(){
   
   x=Xfiltros[3],y=Yfiltros[3];
 
+  //Cuarto filtro
   ctxEcu.moveTo(x+50,210);
 
   if(y<100)ctxEcu.quadraticCurveTo(x+30, y, x, y);
@@ -263,8 +266,8 @@ function muestreoEcu(){
 
 }
 
-let xFX=[30,61,140,171,250,281,312,421];
-let xBoolFX=[83,193,313,443];
+let xFX=[30,61,140,171,250,281,312,421,500,531];
+let xBoolFX=[83,193,313,443,545];
 function muestreoFX(){
 
   ctxFX.clearRect(0,0,canvasFX.width,canvasFX.height);
@@ -359,6 +362,27 @@ function muestreoFX(){
   if(selecRev!=0)ctxFX.fillRect(389,61,14,14);
   if(selecRev!=1)ctxFX.fillRect(387,91,18,18);
   if(selecRev!=2)ctxFX.fillRect(385,125,22,22);
+
+  //Pitch
+  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.font = '16px arial';
+
+  ctxFX.beginPath();
+  ctxFX.roundRect(480,10,100,182,10);
+  ctxFX.stroke();
+
+  ctxFX.fillText("Pitch",501,30);
+  ctxFX.font = '14px arial';
+  ctxFX.fillText("%",509,185);
+  ctxFX.fillText("ms",537,185);
+  ctxFX.fillRect(xBoolFX[4],17,15,15);
+
+  ctxFX.fillStyle="rgba(48, 48, 48, 1)";
+  ctxFX.fillRect(xFX[8],40,28,130);
+  ctxFX.fillRect(xFX[9],40,28,130);
+
+  ctxFX.fillStyle="rgba(12,12,12, 1)";
+  if(!boolFX[4])ctxFX.fillRect(xBoolFX[4]+1,18,13,13);
 
   //Relleno de las barras
   ctxFX.fillStyle="rgba(71, 19, 19, 1)";

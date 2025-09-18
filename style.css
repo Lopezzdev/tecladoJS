@@ -73,6 +73,11 @@ canvas{
     background-image: url(https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/down-arrow-icon.png);
     background-size: 16px;
 }
+#botInst{
+    background-image: url(https://cdn-icons-png.flaticon.com/512/70/70948.png);
+    background-size: 50px;
+    height: 50px;
+}
 
 #botones{
     display: flex;
@@ -140,7 +145,7 @@ canvas{
     flex-direction: column;
     justify-content: center;
 }
-#contEnv,#contTrans,#contOndas,#contFX{
+#contEnv,#contTrans,#contOndas,#contFX,#contBotInst{
     font-size: 16px;
     font-weight: 900;
     justify-content: center;
@@ -200,12 +205,32 @@ canvas{
     width: 75px;
 }
 
-
-
-
+#instrumentos{
+    display: flex;
+    height: 100px;
+    position: absolute;
+    top:0px;
+    flex-direction: column-reverse;
+    flex-wrap: wrap;
+}
+#contInst{
+    display: flex;
+    height: 100px;
+}
+#instrumentos div{
+    width: 100px;
+    height: 23px;
+    color:rgb(110, 110, 110);
+    margin: 0.5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(12, 12, 12);
+}
 
 /* #ecu{top:-202px;} */
 /* #efectos{top:-202px;} */
+/* #instrumentos{top:-100px;} */
 
 #debug,#debug2,#debug3{
     /* width: 50px; */

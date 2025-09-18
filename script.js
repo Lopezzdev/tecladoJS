@@ -77,12 +77,12 @@ let delays=[];
 let salidaFiltros=[],salidaFijos,salidaReverbs;
 let reverbGain,reverbConv,reverbRes,reverbWet,reverbDry;
 
-let tremoloGain,tremoloLFO,tremoloInt,vibratoGain,vibratoLFO;
+let tremoloGain,tremoloLFO,tremoloInt,vibratoGain,vibratoLFO,pitchGain;
 let delay,delayFeedback,delayDry,delayWet,delayOut,reverbOut;
 
-let matrizEfectos=[[7,0.2,20],[0.6,0,1],[8,0.2,15],[0.03,0.01,0.1],[0.3,0.05,2],[0.4,0.05,0.8],[0.3,0,1],[0.4,0,1]];
-//                  HzTremolo/intTremolo/HzVibrato/   IntVibrato  /  msDelay  /feedBack delay/IntDelay/IntReverb
-let boolFX=[false,false,false,false],selecRev=1,indiceFX=-1;
+let matrizEfectos=[[7,0.2,20],[0.6,0,1],[8,0.2,15],[0.03,0.01,0.1],[0.3,0.05,1],[0.4,0.05,0.8],[0.3,0,1],[0.4,0,1],[0,-2,2],[0.3,0,1]];
+//                  HzTremolo/intTremolo/HzVibrato/   IntVibrato  /  msDelay  /feedBack delay /IntDelay /IntReverb/intPitch/ msPitch
+let boolFX=[false,false,false,false,false],selecRev=1,indiceFX=-1;
 
 for(i=0;i<cantSources;i++){
     sources[i]=audioCtx.createBufferSource();
@@ -218,12 +218,12 @@ async function reproducir(nota){
     const t = audioCtx.currentTime;
     ganancias[srcAux2].gain.cancelScheduledValues(t);
     ganancias[srcAux2].gain.setValueAtTime(ganancias[srcAux2].gain.value, t);
-    ganancias[srcAux2].gain.linearRampToValueAtTime(0, t + 0.001);
+    ganancias[srcAux2].gain.linearRampToValueAtTime(0, t + 0.01);
 
     setTimeout(() => {
       sources[srcAux2].stop();
       muestreo();
-    }, 0.001*1000+100);
+    }, 0.01*1000+200);
   }
 
   try {
@@ -232,11 +232,9 @@ async function reproducir(nota){
   filtrosHigh[src].disconnect();
   filtrosLow[src].disconnect();
   salidaFiltros[src].disconnect();
-  delays[src].disconnect();
 } catch(e) {}
 
   ultimoSource[nota]=src;sonando[nota]=true;apretando[nota]=true;
-  ahora = audioCtx.currentTime;
 
   let buffer = audioCtx.createBuffer(1, largosOnda[nota], sampleRate);
   buffer.copyToChannel(matrizNotas[nota], 0);
@@ -246,6 +244,8 @@ async function reproducir(nota){
   sources[src].buffer = buffer;
 
   //Creando envolvente de ganancia
+  ahora = audioCtx.currentTime;
+
   ganancias[src].gain.value = 0;
   ganancias[src].gain.setValueAtTime(0, ahora); //Inicia en 0
   ganancias[src].gain.linearRampToValueAtTime(1, ahora + amp1[0]); //Va al maximo en el tiempo de ataque
@@ -253,35 +253,40 @@ async function reproducir(nota){
 
   agregarFiltros(nota);
 
-  //Conecciones
   salidaFiltros[src]=audioCtx.createGain();
 
   sources[src].connect(ganancias[src]).connect(filtrosHigh[src]).connect(filtrosLow[src]).connect(salidaFiltros[src]);
 
   agregarEfectos();
+
+  //Delay
+  delay.delayTime.value=matrizEfectos[4][0];
+  delayFeedback.gain.value=matrizEfectos[5][0];
+  delayWet.gain.value=matrizEfectos[6][0];
+  delayDry.gain.value=1-matrizEfectos[6][0];
+  if(!boolFX[2]){delayWet.gain.value=0;delayDry.gain.value=1;}
+  if(boolFX[2])delay.connect(delayFeedback).connect(delay);
   
+  //Reverb
   reverbWet.gain.value=matrizEfectos[7][0];
   reverbDry.gain.value=1-matrizEfectos[7][0];
   if(!boolFX[3]){reverbWet.gain.value=0;reverbDry.gain.value=1;}
   
+  //Conecciones
   salidaFiltros[src].connect(tremoloGain);
 
-  tremoloGain.connect(delays[src]).connect(delayWet).connect(delayOut);
+  tremoloGain.connect(delay).connect(delayWet).connect(delayOut);
   tremoloGain.connect(delayDry).connect(delayOut);
 
-  // delayOut.connect(reverbWet).connect(reverbConv).connect(reverbGain).connect(salidaReverb[src]);
   delayOut.connect(reverbWet).connect(reverbConv).connect(reverbGain).connect(salidaReverbs);
-  // delayOut.connect(reverbDry).connect(salidaReverb[src]);
   delayOut.connect(reverbDry).connect(salidaReverbs);
 
-  // delayOut.connect(salidaFijos);
-  // salidaReverb[src].connect(salidaFijos);
   salidaReverbs.connect(salidaFijos);
 
   sources[src].start();
 
   src++;
-  if(src>=sources.length){src=0;}
+  if(src>=sources.length)src=0;
 
 }
 
@@ -367,34 +372,49 @@ function agregarEfectos(){
   vibratoLFO.connect(vibratoGain).connect(sources[src].playbackRate);
   vibratoLFO.start();
 
-  //Delay
-  delays[src]=audioCtx.createDelay();
-  delayFeedback=audioCtx.createGain();
-  delayDry=audioCtx.createGain();
-  delayWet=audioCtx.createGain();
-  delayOut=audioCtx.createGain();
-  
-  delays[src].delayTime.value=matrizEfectos[4][0];
-  delayFeedback.gain.value=matrizEfectos[5][0];
-  delayWet.gain.value=matrizEfectos[6][0];
-  delayDry.gain.value=1-matrizEfectos[6][0];
-  if(!boolFX[2]){delayWet.gain.value=0;delayDry.gain.value=1;}
+  //Pitch
+  if(boolFX[4]){
+    let valorAux=matrizEfectos[8][0];
+    if(valorAux>=0)valorAux+=1;
+    else valorAux=1/(Math.abs(valorAux)+1);
 
-  if(boolFX[2])delays[src].connect(delayFeedback).connect(delays[src]);
+    sources[src].playbackRate.setValueAtTime(valorAux, ahora); 
+    sources[src].playbackRate.linearRampToValueAtTime(1.0,ahora + matrizEfectos[9][0]);
+  }
 
 }
 
-agregarReverb();
-async function agregarReverb(){
-  // Reverb
+crearReverb();
+async function crearReverb(){
+
+  try{
+    reverbConv.disconnect();
+    reverbGain.disconnect();
+    reverbDry.disconnect();
+    reverbWet.disconnect();
+  }catch{}
+
   reverbConv=audioCtx.createConvolver();
   reverbGain=audioCtx.createGain();
   reverbDry=audioCtx.createGain();
   reverbWet=audioCtx.createGain();
 
   reverbGain.gain.value=1;
-  reverbRes=await loadIR(`media/reverb${selecRev}.wav`);
+  reverbRes=await loadIR(`./media/reverb${selecRev}.wav`);
   reverbConv.buffer=reverbRes;
+
+}
+
+crearDelay();
+function crearDelay(){
+  
+  //Delay
+  delay=audioCtx.createDelay();
+  delayFeedback=audioCtx.createGain();
+  delayDry=audioCtx.createGain();
+  delayWet=audioCtx.createGain();
+  delayOut=audioCtx.createGain();
+
 }
 
 //Detener
@@ -488,7 +508,7 @@ function clickEnv1(){
 
   if(amp1[0]<0.005)amp1[0]=0.005;
   if(amp1[1]<0.005)amp1[1]=0.005;
-  if(amp1[3]<0.005)amp1[3]=0.005;
+  if(amp1[3]<0.01)amp1[3]=0.01;
   if(amp1[0]>10)amp1[0]=10;
   if(amp1[1]>10)amp1[1]=10;
   if(amp1[3]>10)amp1[3]=10;
@@ -606,9 +626,9 @@ function clickFX(){
   }
 
   if(!triggerFX){
-    if(mouseX>=386&&mouseX<=406&&mouseY>=124&&mouseY<=144){selecRev=0;agregarReverb();};
-    if(mouseX>=386&&mouseX<=406&&mouseY>=92&&mouseY<=112){selecRev=1;agregarReverb();};
-    if(mouseX>=386&&mouseX<=406&&mouseY>=56&&mouseY<=76){selecRev=2;agregarReverb();};
+    if(mouseX>=386&&mouseX<=406&&mouseY>=124&&mouseY<=144){selecRev=0;crearReverb();};
+    if(mouseX>=386&&mouseX<=406&&mouseY>=92&&mouseY<=112){selecRev=1;crearReverb();};
+    if(mouseX>=386&&mouseX<=406&&mouseY>=56&&mouseY<=76){selecRev=2;crearReverb();};
   }
 
   if(!triggerFX){
@@ -688,9 +708,10 @@ document.querySelector("#refrescar").addEventListener("mousedown",()=>{
     clickEcu();
   }
   if(indiceEnv==5){
-    boolFX=[false,false,false,false];
+    boolFX=[false,false,false,false,false];
     selecRev=1;
     for(i=0;i<matrizEfectos.length;i++)matrizEfectos[i][0]=matrizEfectos[i][1];
+    matrizEfectos[8][0]=0;
     muestreoFX();
   }
 

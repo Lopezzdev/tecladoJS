@@ -55,6 +55,7 @@ let armonicosCustom=[],armonicosRandom=[];
 let anchoCuadrada=100,coefAncho=100/anchoCuadrada;
 
 for(i=0;i<cantArmonicos;i++){armonicosCustom[i]=0;}
+armonicosCustom[0]=1;
 
 cantArmonicosRandom=Math.round(Math.random()*cantArmonicos);
 for(i=0;i<cantArmonicosRandom;i++)armonicosRandom[i]=Math.random();
@@ -71,7 +72,7 @@ for(i=0;i<25;i++){arrayRelaciones2[i+12]=arrayRelaciones2[i]*2;}
 
 let largosOnda=[],matrizNotas=[],sources=[];
 let ganancias=[],filtrosLow=[],filtrosHigh=[];
-let sonando=[],apretando=[],coef=[];
+let sonando=[],apretando=[],coef=[];distaux=[];
 
 let delays=[];
 let salidaFiltros=[],salidaFijos,salidaReverbs;
@@ -80,9 +81,10 @@ let reverbGain,reverbConv,reverbRes,reverbWet,reverbDry;
 let tremoloGain,tremoloLFO,tremoloInt,vibratoGain,vibratoLFO,pitchGain;
 let delay,delayFeedback,delayDry,delayWet,delayOut,reverbOut;
 
-let matrizEfectos=[[7,0.2,20],[0.6,0,1],[8,0.2,15],[0.03,0.01,0.1],[0.3,0.05,1],[0.4,0.05,0.8],[0.3,0,1],[0.4,0,1],[0,-2,2],[0.3,0,1]];
-//                  HzTremolo/intTremolo/HzVibrato/   IntVibrato  /  msDelay  /feedBack delay /IntDelay /IntReverb/intPitch/ msPitch
-let boolFX=[false,false,false,false,false],selecRev=1,indiceFX=-1;
+let matrizEfectos=[[7,0.2,20],[0.6,0,1],[8,0.2,15],[0.03,0.01,0.1],[0.3,0.05,1],[0.4,0.05,0.8],[0.3,0,1],[0.4,0,1],[0,-2,2],[0.3,0,1],[0.3,0,0.9],[0.8,0,1]];
+//                  HzTremolo/intTremolo/HzVibrato/   IntVibrato  /  msDelay  /feedBack delay /IntDelay /IntReverb/intPitch/ msPitch / IntDist / CutDist
+// let boolFX=[false,false,false,false,false,false],selecRev=1,indiceFX=-1;
+let boolFX=[false,false,false,false,false,false],selecRev=1,indiceFX=-1;
 
 for(i=0;i<cantSources;i++){
     sources[i]=audioCtx.createBufferSource();
@@ -130,17 +132,65 @@ function crearArrays(){
     case 4:crearRuido();break;
     case 5:crearCustom();break;
   }
+  
+  let max=0;
+  if(indiceOnda==3||indiceOnda==5){
+    for(i=0;i<largosOnda[0];i++){if(matrizNotas[0][i]>max)max=matrizNotas[0][i]}
 
+    max=amp1[4]*0.2/max;
+
+    for(j=0;j<arrayRelaciones.length;j++){
+      for(i=0;i<largosOnda[j];i++){
+        matrizNotas[j][i]*=max;
+      }
+    }
+  };
+
+  if(indiceOnda!=4&&boolFX[5])sumardist();
+
+  // crearReverb();
   muestreo();
   muestreoDebug();
 
 }
+
+function sumardist(){
+  // return;
+  let max=0,max2=0;
+  let umbral=matrizEfectos[10][0];
+  let dureza=matrizEfectos[11][0];
+
+  //Maximo
+  for(i=0;i<largosOnda[0];i++)if(matrizNotas[0][i]>max)max=matrizNotas[0][i];
+
+  //Recorte
+  for(j=0;j<arrayRelaciones.length;j++){
+    for(i=0;i<largosOnda[j];i++){
+        if(matrizNotas[j][i]>(max*(1-umbral)))matrizNotas[j][i]=(1-dureza)*[matrizNotas[j][i]-max*(1-umbral)]+max*(1-umbral);
+        if(matrizNotas[j][i]<-(max*(1-umbral)))matrizNotas[j][i]=-(1-dureza)*[-matrizNotas[j][i]-max*(1-umbral)]-max*(1-umbral);
+
+    }
+  }
+
+  //Maximo2
+  for(i=0;i<largosOnda[0];i++)if(matrizNotas[0][i]>max2)max2=matrizNotas[0][i];
+
+  //Escalado
+  for(j=0;j<arrayRelaciones.length;j++){
+    for(i=0;i<largosOnda[j];i++){
+        matrizNotas[j][i]*=max/max2;
+    }
+  }
+
+}
+
 //Crear ondas
 {
   function crearOndaSeno(){
     for(j=0;j<arrayRelaciones.length;j++){
       for(i=0;i<largosOnda[j];i++){
         matrizNotas[j][i]=Math.sin(2*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*0.4*amp1[4];
+        matrizNotas[j][i]*=-1;
       }
     }
   }
@@ -164,6 +214,11 @@ function crearArrays(){
   }
 
   function crearRandom(){
+
+    let bool0=false;
+
+    for(i=0;i<armonicosRandom.length;i++)if(armonicosRandom[i]>0)bool0=true;
+    if(!bool0){crearOndaSeno();return;}
       
     for(j=0;j<arrayRelaciones.length;j++){
 
@@ -172,7 +227,8 @@ function crearArrays(){
         matrizNotas[j][i]=0;
 
         for(k=0;k<cantArmonicos;k++){
-          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(k+1));
+          // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(k+1));
+          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(0.25*(k+1)));
         }
       }
       
@@ -193,20 +249,27 @@ function crearArrays(){
   }
 
   function crearCustom(){
-  for(j=0;j<arrayRelaciones.length;j++){
 
-    for(i=0;i<largosOnda[j];i++){
+    let bool0=false;
 
-      matrizNotas[j][i]=0;
+    for(i=0;i<armonicosCustom.length;i++)if(armonicosCustom[i]>0)bool0=true;
+    if(!bool0){crearOndaSeno();return;}
 
-      for(k=0;k<armonicosCustom.length;k++){
-        matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*0.4*amp1[4]/(2*(k+1)));
-        // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*0.4*amp1[4]);
+    for(j=0;j<arrayRelaciones.length;j++){
+
+      for(i=0;i<largosOnda[j];i++){
+
+        matrizNotas[j][i]=0;
+        for(k=0;k<armonicosCustom.length;k++){
+          // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*0.4*amp1[4]/(2*(k+1)));
+          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*0.4*amp1[4]);
+        }
       }
     }
+
     
+
   }
-}
 }
 
 //Reproducir
@@ -550,8 +613,10 @@ function clickCustom(){
 
   let posCanvas = canvasCustom.getBoundingClientRect();
 
-  posY2=1+(posCanvas.top-event.clientY)/(canvasCustom.height);
+  // posY2=1+(posCanvas.top-event.clientY)/(canvasCustom.height);
+  posY2=1+(posCanvas.top-event.clientY)/(canvasCustom.height)-0.01;
   posY2=parseFloat(posY2.toFixed(2));
+  p(posY2)
 
   if(!triggerCustom){
     posX2=(event.clientX-posCanvas.left-2)/anchoColumna;
@@ -586,11 +651,20 @@ function clickAncho(){
 function clickEcu(){
   let rect = canvasEcu.getBoundingClientRect();
 
-  mouseX=event.clientX - rect.left;
-  mouseY=event.clientY - rect.top;
+  // mouseX=event.clientX - rect.left;
+  // mouseY=event.clientY - rect.top;
+
+  if(!esTactil){
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
+  }else{
+    mouseX = event.touches[0].clientX - rect.left;
+    mouseY = event.touches[0].clientY - rect.top;
+  }
 
   for(i=0;i<cantidadFiltros;i++){
-        if(mouseX>=Xfiltros[i]-6&&mouseX<=Xfiltros[i]+6&&mouseY>=Yfiltros[i]-6&&mouseY<=Yfiltros[i]+6&&indiceEcu==null)indiceEcu=i;
+        // if(mouseX>=Xfiltros[i]-6&&mouseX<=Xfiltros[i]+6&&mouseY>=Yfiltros[i]-6&&mouseY<=Yfiltros[i]+6&&indiceEcu==null)indiceEcu=i;;
+        if(mouseX>=Xfiltros[i]-16&&mouseX<=Xfiltros[i]+16&&mouseY>=Yfiltros[i]-16&&mouseY<=Yfiltros[i]+16&&indiceEcu==null)indiceEcu=i;;
   }
 
   if(indiceEcu==null)indiceEcu=999;
@@ -652,8 +726,25 @@ function clickFX(){
   muestreoFX();
 }
 
+function silenciar(){
 
+  for(i=0;i<=24;i++){
+    try{
+      detener(i);
+      sonando[i]=false;
+    }catch{}
+  }
 
+  for(i=0;i<sources.length;i++){
+    try{
+      sources[i].disconnect();
+      ganancias[i].disconnect();
+      filtrosHigh[i].disconnect();
+      filtrosLow[i].disconnect();
+    }catch{}
+  }  
+  muestreo();
+}
 
 
 
@@ -719,13 +810,31 @@ document.querySelector("#refrescar").addEventListener("mousedown",()=>{
 
 })
 
+
+
+const esTactil = window.matchMedia('(pointer: coarse)').matches;
+let notasClick=[];
 let patronPiano=[0,1,2,1,0,0,1,2,1,2,1,0,0,1,2,1,0,0,1,2,1,2,1,0,0];
-function clickear(){
+
+function clickear(event){
     
   let rect = canvasTeclado.getBoundingClientRect();
+  let mouseX,mouseY;
 
-  let mouseX = event.clientX - rect.left;
-  let mouseY = event.clientY - rect.top;
+  let dedo=0;
+  if(esTactil){
+    for (let touch of event.changedTouches) {
+      dedo=touch.identifier;
+    }
+  }
+
+  if(!esTactil){
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
+  }else{
+    mouseX = event.touches[dedo].clientX - rect.left;
+    mouseY = event.touches[dedo].clientY - rect.top;
+  }
 
   let nota;
   let XX=0,XXaux=0;
@@ -755,31 +864,41 @@ function clickear(){
   if(mouseX>701)nota=24;
   if(mouseX<10)nota=0;
 
-
   reproducir(nota);
+
+  notasClick[dedo]=nota;
 
   muestreo();
 
 }
 
-function silenciar(){
+function detenerClick(event){
 
-  for(i=0;i<=24;i++){
-    try{
-      detener(i);
-      sonando[i]=false;
-    }catch{}
+  let dedo=0;
+  if(esTactil){
+    for (let touch of event.changedTouches) {
+      dedo=touch.identifier;
+    }
   }
 
-  for(i=0;i<sources.length;i++){
+  let notaClick=notasClick[dedo]
+
+  let srcAux=ultimoSource[notaClick];
+
+  apretando[notaClick]=false;
+
+  const t = audioCtx.currentTime;
+  ganancias[srcAux].gain.cancelScheduledValues(t);
+  ganancias[srcAux].gain.setValueAtTime(ganancias[srcAux].gain.value, t);
+  ganancias[srcAux].gain.linearRampToValueAtTime(0, t + amp1[3]);
+
+  setTimeout(() => {
     try{
-      sources[i].disconnect();
-      ganancias[i].disconnect();
-      filtrosHigh[i].disconnect();
-      filtrosLow[i].disconnect();
+      sonando[notaClick]=false;
+      sources[srcAux].stop();
+      muestreo();
     }catch{}
-  }  
-  muestreo();
+    }, amp1[3]*1000);
 }
 
 function funcionDebug1(){

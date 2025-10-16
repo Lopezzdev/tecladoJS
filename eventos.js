@@ -42,9 +42,24 @@ document.addEventListener("mouseup",()=>{
   document.querySelector("#custom").removeEventListener("mousemove",clickCustom);triggerCustom=false;
   document.querySelector("#ancho").removeEventListener("mousemove",clickAncho);
   document.querySelector("#efectos").removeEventListener("mousemove",clickFX);
-  crearArrays();
-  silenciar();
 });
+
+document.querySelector("#botones").addEventListener("mousedown",crearArrays);
+document.querySelector("#efectos").addEventListener("mouseup",crearArrays);
+
+// let auxToque=false;
+// document.querySelector("#teclado").addEventListener("touchstart",()=>{document.body.style.overflow = 'hidden';auxToque=true;})
+
+document.querySelector("#teclado").addEventListener('touchmove', function (event) {
+  event.preventDefault(); // evita desplazamiento
+}, { passive: false });
+document.querySelector("#ecu").addEventListener('touchmove', function (event) {
+  event.preventDefault(); // evita desplazamiento
+}, { passive: false });
+
+
+// document.addEventListener("touchstart",()=>{if(!auxToque)document.body.style.overflow = 'scroll';})
+// document.addEventListener("touchend",()=>{document.body.style.overflow = 'scroll';auxToque=false;})
 
 document.querySelector("#botAmp1").addEventListener("mousedown",()=>{
 
@@ -171,8 +186,17 @@ document.querySelector("#mas1st").addEventListener("mousedown",()=>transponer(1)
 document.querySelector("#menos1st").addEventListener("mousedown",()=>transponer(-1));
 
 
-// document.querySelector("#teclado").addEventListener("mousedown",clickear);
-// document.querySelector("#teclado").addEventListener("mouseup",silenciar);
+
+if(!esTactil){
+  document.querySelector("#teclado").addEventListener("mousedown",clickear);
+  document.querySelector("#teclado").addEventListener("mouseup",detenerClick);
+}else{
+  document.querySelector("#teclado").addEventListener("touchstart",clickear);
+  document.querySelector("#teclado").addEventListener("touchend",detenerClick);
+}
+
+
+
 
 document.querySelector("#env").addEventListener("mousedown",()=>{
   clickEnv1();
@@ -201,15 +225,6 @@ document.querySelector("#ancho").addEventListener("mouseup",()=>{
   document.querySelector("#ancho").removeEventListener("mousemove",clickAncho);
 });
 
-document.querySelector("#ecu").addEventListener("mousedown",()=>{
-  indiceEcu=null;
-  document.querySelector("#ecu").addEventListener("mousemove",clickEcu);
-})
-document.querySelector("#ecu").addEventListener("mouseup",()=>{
-  document.querySelector("#ecu").removeEventListener("mousemove",clickEcu);
-  indiceEcu=null;
-})
-
 document.querySelector("#efectos").addEventListener("mousedown",()=>{
   clickFX();
   document.querySelector("#efectos").addEventListener("mousemove",clickFX);
@@ -219,13 +234,31 @@ document.querySelector("#efectos").addEventListener("mouseup",()=>{
   indiceFX=-1;triggerFX=false;
 })
 
+document.querySelector("#ecu").addEventListener("mousedown",()=>{
+  indiceEcu=null;
+  document.querySelector("#ecu").addEventListener("mousemove",clickEcu);
+})
+document.querySelector("#ecu").addEventListener("mouseup",()=>{
+  document.querySelector("#ecu").removeEventListener("mousemove",clickEcu);
+  indiceEcu=null;
+})
+
+document.querySelector("#ecu").addEventListener("touchstart",()=>{
+  indiceEcu=null;
+  document.querySelector("#ecu").addEventListener("touchmove",clickEcu);
+})
+document.querySelector("#ecu").addEventListener("touchend",()=>{
+  document.querySelector("#ecu").removeEventListener("touchmove",clickEcu);
+  indiceEcu=null;
+})
+
 document.querySelector("#ecu").addEventListener("dblclick",()=>{
     let rect = canvasEcu.getBoundingClientRect();
 
     mouseX = event.clientX - rect.left;
     mouseY = event.clientY - rect.top;
 
-    for(i=0;i<cantidadFiltros;i++)if(mouseX>=Xfiltros[i]-6&&mouseX<=Xfiltros[i]+6&&mouseY>=Yfiltros[i]-6&&mouseY<=Yfiltros[i]+6){
+    for(i=0;i<cantidadFiltros;i++)if(mouseX>=Xfiltros[i]-16&&mouseX<=Xfiltros[i]+16&&mouseY>=Yfiltros[i]-16&&mouseY<=Yfiltros[i]+16){
         boolFiltros[i]=!boolFiltros[i];
     }
     muestreoEcu();
@@ -263,3 +296,6 @@ document.querySelector("#ecu").addEventListener("wheel", (event) => {
 // document.querySelector("#debug").addEventListener("mousedown",funcionDebug1);
 // document.querySelector("#debug2").addEventListener("mousedown",reproducir2);
 // document.querySelector("#debug2").addEventListener("mouseup",()=>{sources[0].stop();});
+
+// document.querySelector("#slide1").addEventListener("input",sumardist);
+// document.querySelector("#slide2").addEventListener("input",sumardist);

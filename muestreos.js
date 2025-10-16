@@ -266,8 +266,8 @@ function muestreoEcu(){
 
 }
 
-let xFX=[30,61,140,171,250,281,312,421,500,531];
-let xBoolFX=[83,193,313,443,545];
+let xFX=[30,61,140,171,250,281,312,421,500,531,610,641];
+let xBoolFX=[83,193,313,443,545,650];
 function muestreoFX(){
 
   ctxFX.clearRect(0,0,canvasFX.width,canvasFX.height);
@@ -384,6 +384,27 @@ function muestreoFX(){
   ctxFX.fillStyle="rgba(12,12,12, 1)";
   if(!boolFX[4])ctxFX.fillRect(xBoolFX[4]+1,18,13,13);
 
+  //Distorsion
+  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.font = '16px arial';
+
+  ctxFX.beginPath();
+  ctxFX.roundRect(590,10,100,182,10);
+  ctxFX.stroke();
+
+  ctxFX.fillText("Dist.",615,30);
+  ctxFX.font = '14px arial';
+  ctxFX.fillText("%",619,185);
+  ctxFX.fillText("cut",644,185);
+  ctxFX.fillRect(xBoolFX[5],17,15,15);
+
+  ctxFX.fillStyle="rgba(48, 48, 48, 1)";
+  ctxFX.fillRect(xFX[10],40,28,130);
+  ctxFX.fillRect(xFX[11],40,28,130);
+
+  ctxFX.fillStyle="rgba(12,12,12, 1)";
+  if(!boolFX[5])ctxFX.fillRect(xBoolFX[5]+1,18,13,13);
+
   //Relleno de las barras
   ctxFX.fillStyle="rgba(71, 19, 19, 1)";
   let alt;
@@ -395,11 +416,14 @@ function muestreoFX(){
 
 }
 
+
 function muestreoDebug(){
 
   ctxDebug.strokeStyle = "rgba(71, 19, 19, 1)";
   ctxDebug.lineWidth="3";
   ctxDebug.clearRect(0,0,canvasDebug.width,canvasDebug.height);
+
+  //Mostrar onda
   ctxDebug.beginPath();
 
   for(i=0;i<canvasDebug.width;i++){
@@ -408,6 +432,26 @@ function muestreoDebug(){
   }
 
   ctxDebug.stroke();
+
+  // mostrar eje
+  ctxDebug.strokeStyle = "green";
+  ctxDebug.lineWidth="1";
+  ctxDebug.beginPath();
+  ctxDebug.moveTo(0,100);
+  ctxDebug.lineTo(1000,100);
+  ctxDebug.stroke();
+
+  //Mostrar 1er suavizado
+  ctxDebug.strokeStyle = "yellow";
+  ctxDebug.beginPath();
+
+  for(i=0;i<canvasDebug.width;i++){
+    let numOnda=Math.floor(i/distaux.length);
+    ctxDebug.lineTo(i,distaux[i-numOnda*distaux.length]*200+100);
+  }
+
+  ctxDebug.stroke();
+  
 }
 
 

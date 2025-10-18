@@ -1,3 +1,6 @@
+let colorFX="rgba(100, 29, 29, 1)";
+let colorFX2="rgba(122,31,31,0.6)";
+
 //Mostrar teclado
 function muestreo(){
 
@@ -5,13 +8,40 @@ function muestreo(){
   for(i=0;i<25;i++){
     if(i==0||i==2||i==4||i==5||i==7||i==9||i==11||i==12||i==14||i==16||i==17||i==19||i==21||i==23||i==24){
 
-      if(!apretando[i])ctxTeclado.fillStyle="rgba(131, 131, 131, 1)";
-      else ctxTeclado.fillStyle="rgba(85, 85, 85, 1)";
-
+      ctxTeclado.fillStyle="rgba(131, 131, 131, 1)";
+      ctxTeclado.fillStyle="rgba(140, 140, 140, 1)";
       ctxTeclado.fillRect(posX, 3, 47, 200);
+      if(apretando[i]){
+        ctxTeclado.fillStyle="rgba(0,0,0,0.25)";
+        ctxTeclado.fillRect(posX, 3, 47, 200);
+        ctxTeclado.fillStyle="rgba(0, 0, 0, 0.3)";
+        ctxTeclado.strokeStyle="rgba(50,50,50, 0)";
+
+        ctxTeclado.beginPath();
+
+        if(i==4||i==11||i==16||i==23){
+          if(!apretando[i+1]){
+            ctxTeclado.lineTo(posX+47,0);
+            ctxTeclado.lineTo(posX+30,203);
+            ctxTeclado.lineTo(posX+47,203);
+          }
+        }else{
+          if(!apretando[i+2]){
+            ctxTeclado.lineTo(posX+47,115);
+            ctxTeclado.lineTo(posX+30,203);
+            ctxTeclado.lineTo(posX+47,203);
+          }
+        }
+
+        ctxTeclado.fill();
+        ctxTeclado.stroke();
+        
+      }
 
       ctxTeclado.fillStyle="rgba(255, 255, 255, 0.5)";
-      ctxTeclado.fillRect(posX+43,3,4,200);
+      if(!apretando[i])ctxTeclado.fillRect(posX+45,3,2,200);
+      ctxTeclado.fillStyle="rgba(0, 0, 0, 0.5)";
+      if(!apretando[i])ctxTeclado.fillRect(posX,3,1,200);
 
       posX+=50;
 
@@ -22,20 +52,46 @@ function muestreo(){
     if(i==1||i==3||i==6||i==8||i==10||i==13||i==15||i==18||i==20||i==22){
       if(i==6||i==13||i==18)posX2+=50;
 
-      if(!apretando[i])ctxTeclado.fillStyle="black";
-      else ctxTeclado.fillStyle="rgba(61, 61, 61, 1)";
-
+      ctxTeclado.fillStyle="rgba(25, 25, 25, 1)";
       ctxTeclado.fillRect(posX2, 3, 37, 120);
 
-      ctxTeclado.fillStyle="rgba(255, 255, 255, 0.6)";
-      ctxTeclado.fillRect(posX2+33,3,4,120);
+      ctxTeclado.fillStyle="rgba(10, 10, 10, 1)";
+      ctxTeclado.fillRect(posX2+3,5,28,110);
+
+      ctxTeclado.fillStyle="rgba(255, 255, 255, 0.3)";
+      ctxTeclado.fillRect(posX2+30,5,2,110);
+
+      if(apretando[i]){
+        ctxTeclado.fillStyle="rgba(255,255,255,0.1)";
+        ctxTeclado.fillRect(posX2, 3, 37, 120);
+      }
+      
+      ctxTeclado.fillStyle="rgba(50, 50, 50, 0.5)";
+      ctxTeclado.strokeStyle="rgba(50,50,50, 0)";
+
+      ctxTeclado.beginPath();
+      ctxTeclado.lineTo(posX2,5);
+      if(!apretando[i]){
+        if(!apretando[i-1]){
+          ctxTeclado.lineTo(posX2-8,10);
+          ctxTeclado.lineTo(posX2-12,118);
+        }else{
+          ctxTeclado.lineTo(posX2-10,10);
+          ctxTeclado.lineTo(posX2-18,118);
+        }
+      }else{
+        ctxTeclado.lineTo(posX2-3,10);
+        ctxTeclado.lineTo(posX2-5,120);
+      }
+      ctxTeclado.lineTo(posX2,122);
+      ctxTeclado.fill();
+      ctxTeclado.stroke();
 
       posX2+=50;
     }
   }
 
 }
-
 //Mostrar custom
 function mostrarCustom(){
 
@@ -83,12 +139,13 @@ function muestreoEnv1(){
   }
 
   if(indiceEnv==1){
-    ctxAmp.fillStyle="rgba(122, 31, 31, 0.6)";
+    ctxAmp.fillStyle=colorFX2;
     for(i=0;i<5;i++){
       ancho=total/(maxAmps[i]/amp1[i]);
       ctxAmp.fillRect(2,20*i+2,ancho,18);
     }
 
+    ctxAmp.fillStyle=colorFX;
     if(amp1[0]<1)ctxAmp.fillText(`Ataque: ${Math.round(amp1[0]*1000)}ms`, 585, 16);
     else ctxAmp.fillText(`Ataque: ${(amp1[0]).toFixed(2)}s`, 585, 16);
     if(amp1[1]<1)ctxAmp.fillText(`Decay: ${Math.round(amp1[1]*1000)}ms`, 585, 36);
@@ -99,12 +156,13 @@ function muestreoEnv1(){
     ctxAmp.fillText(`Volumen: ${Math.round(amp1[4]*100)}`, 585, 96);
   }
   if(indiceEnv==2){
-    ctxAmp.fillStyle="rgba(122, 31, 31, 0.6)";
+    ctxAmp.fillStyle=colorFX2;
     for(i=0;i<6;i++){
       ancho=total/(maxFiltros[i]/filtroLow1[i]);
       ctxAmp.fillRect(2,20*i+2,ancho,18);
     }
 
+    ctxAmp.fillStyle=colorFX;
     if(filtroLow1[0]<1)ctxAmp.fillText(`Ataque: ${Math.round(filtroLow1[0]*1000)}ms`, 585, 16);
     else ctxAmp.fillText(`Ataque: ${(filtroLow1[0]).toFixed(2)}s`, 585, 16);
     if(filtroLow1[1]<1)ctxAmp.fillText(`Decay: ${Math.round(filtroLow1[1]*1000)}ms`, 585, 36);
@@ -124,12 +182,13 @@ function muestreoEnv1(){
 
   }
   if(indiceEnv==3){
-    ctxAmp.fillStyle="rgba(122, 31, 31, 0.6)";
+    ctxAmp.fillStyle=colorFX2;
     for(i=0;i<6;i++){
       ancho=total/(maxFiltros[i]/filtroHigh1[i]);
       ctxAmp.fillRect(2,20*i+2,ancho,18);
     }
 
+    ctxAmp.fillStyle=colorFX;
     if(filtroHigh1[0]<1)ctxAmp.fillText(`Ataque: ${Math.round(filtroHigh1[0]*1000)}ms`, 585, 16);
     else ctxAmp.fillText(`Ataque: ${(filtroHigh1[0]).toFixed(2)}s`, 585, 16);
     if(filtroHigh1[1]<1)ctxAmp.fillText(`Decay: ${Math.round(filtroHigh1[1]*1000)}ms`, 585, 36);
@@ -268,13 +327,15 @@ function muestreoEcu(){
 
 let xFX=[30,61,140,171,250,281,312,421,500,531,610,641];
 let xBoolFX=[83,193,313,443,545,650];
+// let colorFX="rgba(112, 32, 32, 1)";
+
 function muestreoFX(){
 
   ctxFX.clearRect(0,0,canvasFX.width,canvasFX.height);
   
   //Tremolo
-  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
-  ctxFX.strokeStyle="rgba(71, 19, 19, 1)";
+  ctxFX.fillStyle=colorFX;
+  ctxFX.strokeStyle=colorFX;
   ctxFX.font = '16px arial';
   ctxFX.lineWidth=1.5;
 
@@ -295,7 +356,7 @@ function muestreoFX(){
   if(!boolFX[0])ctxFX.fillRect(xBoolFX[0]+1,18,13,13);
 
   //Vibrato
-  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.fillStyle=colorFX;
   ctxFX.font = '16px arial';
 
   ctxFX.beginPath();
@@ -315,7 +376,7 @@ function muestreoFX(){
   if(!boolFX[1])ctxFX.fillRect(xBoolFX[1]+1,18,13,13);
 
   //Delay
-  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.fillStyle=colorFX;
   ctxFX.font = '16px arial';
 
   ctxFX.beginPath();
@@ -338,7 +399,7 @@ function muestreoFX(){
   if(!boolFX[2])ctxFX.fillRect(xBoolFX[2]+1,18,13,13);
 
   //Reverb
-  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.fillStyle=colorFX;
   ctxFX.font = '16px arial';
 
   ctxFX.beginPath();
@@ -364,7 +425,7 @@ function muestreoFX(){
   if(selecRev!=2)ctxFX.fillRect(385,125,22,22);
 
   //Pitch
-  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.fillStyle=colorFX;
   ctxFX.font = '16px arial';
 
   ctxFX.beginPath();
@@ -385,7 +446,7 @@ function muestreoFX(){
   if(!boolFX[4])ctxFX.fillRect(xBoolFX[4]+1,18,13,13);
 
   //Distorsion
-  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.fillStyle=colorFX;
   ctxFX.font = '16px arial';
 
   ctxFX.beginPath();
@@ -406,7 +467,7 @@ function muestreoFX(){
   if(!boolFX[5])ctxFX.fillRect(xBoolFX[5]+1,18,13,13);
 
   //Relleno de las barras
-  ctxFX.fillStyle="rgba(71, 19, 19, 1)";
+  ctxFX.fillStyle=colorFX;
   let alt;
   for(i=0;i<xFX.length;i++){
     let val=matrizEfectos[i][0],min=matrizEfectos[i][1],max=matrizEfectos[i][2];

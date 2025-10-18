@@ -30,46 +30,36 @@ canvas{
 }
 
 .boton{
-    background-color: rgb(122, 31, 31);
+    background-image: linear-gradient(to right, rgb(95, 25, 25),rgb(95, 25, 25),rgb(95, 25, 25), rgb(107, 29, 29));
     width: 60px;
     height: 30px;
     justify-content: center;
     align-items: center;
     display: flex;
-    box-shadow: -3px 1px 5px rgb(0, 0, 0);
+    box-shadow: -3px 2px 1px rgb(0, 0, 0);
     border-radius: 5px;
     background-position: center;
     background-repeat: no-repeat;
     margin:5px;
 }
+
+.boton img{
+    height: 80%;
+}
+
 #parte1,#parte2{
     display: flex;
 }
 
-#botSeno{
-    background-image: url(https://static.thenounproject.com/png/4900358-200.png);
-    background-size: 25px;
-}
-#botCuadrada{
-    background-image: url(https://www.svgrepo.com/show/352677/wave-square.svg);
-    background-size: 28px;
-}
-#botTriangular{
-    background-image: url(https://g.js.org/img/functions/sawtoothWave.svg);
-    background-size: 25px;
-}
-#botRuido{
-    background-image: url(https://cdn-icons-png.flaticon.com/512/27/27064.png);
-    background-size: 28px;
-}
-#subirOctava{
-    background-image: url(https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/up-arrow-icon.png);
-    background-size: 16px;
-}
-#bajarOctava{
-    background-image: url(https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/down-arrow-icon.png);
-    background-size: 16px;
-}
+#botRuido img{height: 90%;}
+
+#botCuadrada img{height: 70%;}
+
+#subirOctava img{height: 55%;}
+#bajarOctava img{height: 55%;transform: rotate(180deg);}
+
+#refrescar img{height: 70%;}
+
 #botInst{
     background-image: url(https://cdn-icons-png.flaticon.com/512/70/70948.png);
     background-size: 50px;
@@ -88,7 +78,7 @@ canvas{
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     position:relative;
-    background-image: linear-gradient(to right, rgb(31, 31, 31), rgb(40, 40, 40));
+    background-image: linear-gradient(to right, rgb(17, 17, 17),rgb(20, 20, 20),rgb(20, 20, 20), rgb(30, 30, 30));
 }
 
 .boton:hover{
@@ -171,14 +161,14 @@ canvas{
 }
 
 #refrescar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position:absolute;
     width: 40px;
     height: 40px;
     background-color: rgba(122, 31, 31);
-    background-image: url(https://cdn-icons-png.flaticon.com/512/25/25465.png);
-    background-size: 27px;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-image: linear-gradient(to right, rgb(95, 25, 25),rgb(95, 25, 25),rgb(95, 25, 25), rgb(107, 29, 29));
     top:0px;
     left: 40px;
     z-index: -1;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tecladillo 2</title>
+    <title>Sintetizador</title>
 
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/70/70948.png">
 
@@ -21,13 +21,25 @@
         <div id="botones">
             <div id="contOndas">
                 <div id="parte1">
-                    <div class="boton" id="botSeno"></div>
-                    <div class="boton" id="botCuadrada"></div>
-                    <div class="boton" id="botTriangular"></div>
+                    <div class="boton" id="botSeno">
+                        <!-- <img src="https://static.thenounproject.com/png/4900358-200.png" alt=""> -->
+                        <img src="./media/seno.png" alt="">
+                    </div>
+                    <div class="boton" id="botCuadrada">
+                        <!-- <img src="https://www.svgrepo.com/show/352677/wave-square.svg" alt=""> -->
+                        <img src="./media/cuadrada.png" alt="">
+                    </div>
+                    <div class="boton" id="botTriangular">
+                        <!-- <img src="https://g.js.org/img/functions/sawtoothWave.svg" alt=""> -->
+                         <img src="./media/triangular.png" alt="">
+                    </div>
                 </div>
                 <div id="parte2">
                     <div class="boton" id="botRandom">Rand.</div>
-                    <div class="boton" id="botRuido"></div>
+                    <div class="boton" id="botRuido">
+                        <!-- <img src="https://cdn-icons-png.flaticon.com/512/27/27064.png" alt=""> -->
+                         <img src="./media/ruido.png" alt="">
+                    </div>
                     <div class="boton" id="botCustom">Custom</div>
                 </div>  
             </div>
@@ -35,8 +47,14 @@
                 <div class="boton" id="botInst"></div>
             </div> -->
             <div id="contOctavas">
-                <div class="boton" id="subirOctava"></div>
-                <div class="boton" id="bajarOctava"></div>
+                <div class="boton" id="subirOctava">
+                    <!-- <img src="https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/up-arrow-icon.png" alt=""> -->
+                    <img src="./media/arriba.png" alt="">
+                </div>
+                <div class="boton" id="bajarOctava">
+                    <!-- <img src="https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/down-arrow-icon.png" alt=""> -->
+                     <img src="./media/arriba.png" alt="">
+                </div>
             </div>
             <div id="contTrans">
                 <div class="boton" id="mas1st">+1st</div>
@@ -62,7 +80,9 @@
         <canvas id="env" height="202" width="702"></canvas>
         <div id="trans">0st</div>
         <canvas id="custom" height="202" width="704"></canvas>
-        <div id="refrescar"></div>
+        <div id="refrescar">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25465.png" alt="">
+        </div>
         <canvas id="ancho" height="202" width="40"></canvas>
         <canvas id="ecu" height="202" width="704"></canvas>
         <canvas id="efectos" height="202" width="700"></canvas>

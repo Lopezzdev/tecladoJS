@@ -51,7 +51,7 @@ canvas{
     display: flex;
 }
 
-#botRuido img{height: 90%;}
+#botDrums img{height: 110%;transform: rotate(30deg) translateY(-1px);}
 
 #botCuadrada img{height: 70%;}
 
@@ -59,12 +59,10 @@ canvas{
 #bajarOctava img{height: 55%;transform: rotate(180deg);}
 
 #refrescar img{height: 70%;}
+#borrar img{height: 75%;}
+#botCentrar img {height: 75%;}
 
-#botInst{
-    background-image: url(https://cdn-icons-png.flaticon.com/512/70/70948.png);
-    background-size: 50px;
-    height: 50px;
-}
+#botInst img{height: 120%;}
 
 #botones{
     display: flex;
@@ -73,7 +71,7 @@ canvas{
     width: 753px;
     height: 100px;
     font-size: 28px;
-    box-shadow: 0px 20px 25px rgb(0, 0, 0);
+    box-shadow: 0px 25px 25px rgb(0, 0, 0);
     z-index: 2;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -81,10 +79,61 @@ canvas{
     background-image: linear-gradient(to right, rgb(17, 17, 17),rgb(20, 20, 20),rgb(20, 20, 20), rgb(30, 30, 30));
 }
 
-.boton:hover{
+#instrumentos{
+    background-color: rgb(20, 20, 20);
+    width: 260px;
+    height: 50px;
+    position: absolute;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#contInst{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    box-shadow: -2px 3px 1px rgb(0, 0, 0);
+}
+
+#textoIns{
+    width: 80%;
+    height: 35px;
+    color:rgb(110, 110, 110);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(12, 12, 12);
+}
+
+#botIzq,#botDer{
+    height: 33px;
+    width: 33px;
+    background-color: rgb(12, 12, 12);
+    border:solid 1px rgb(33, 33, 33);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 900;
+    color:rgb(84, 84, 84);
+}
+
+.boton:hover,#borrar:hover{
     transform: scale(1.03);transition:transform 0.1s;
 }
-.boton:active{
+.boton:active,#borrar:active{
+    transform: scale(1.02);
+}
+
+#botIzq:hover,#botDer:hover{
+    transform: scale(1.04);transition: transform 0.1s;
+}
+#botIzq:active,#botDer:active{
     transform: scale(1.02);
 }
 
@@ -101,6 +150,8 @@ canvas{
     align-items: center;
     width: 753px;
     margin:300px 30px;
+    bottom:0px;
+    right: 0px;
 }
 #env{
     position:absolute;
@@ -115,16 +166,22 @@ canvas{
 #custom,#ecu,#efectos{
     position:absolute;
     z-index: 0;
-    top:0px;
-    left: 20px;
     background-color: rgb(12, 12, 12);
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
+#custom,#ecu{
+    left: 20px;
+    top:0px;
+}
+#efectos{
+    left:0px;
+    top:10px;
+}
 
 #botones>div{
     display: flex;
-    height: 100%;
+    /* height: 100%; */
 }
 #contOndas{
     align-items: center;
@@ -134,14 +191,16 @@ canvas{
     flex-direction: column;
     justify-content: center;
 }
-#contEnv,#contTrans,#contOndas,#contFX,#contBotInst{
+#contEnv,#contTrans,#contOndas,#contFX,#contBotInst,#contAyuda{
     font-size: 16px;
     font-weight: 900;
     justify-content: center;
     align-items: center;
 }
 
-#contTrans{flex-direction: column;}
+#contTrans,#contFX{flex-direction: column;}
+#contAyuda{flex-direction: column;font-size: 20px;}
+
 
 #trans{
     position:absolute;
@@ -160,20 +219,29 @@ canvas{
     z-index: 1;
 }
 
-#refrescar{
+#refrescar,#borrar{
     display: flex;
     justify-content: center;
     align-items: center;
     position:absolute;
     width: 40px;
     height: 40px;
-    background-color: rgba(122, 31, 31);
     background-image: linear-gradient(to right, rgb(95, 25, 25),rgb(95, 25, 25),rgb(95, 25, 25), rgb(107, 29, 29));
+    z-index: -1;
+}
+
+#refrescar{
     top:0px;
     left: 40px;
-    z-index: -1;
     border-bottom-left-radius: 10px;
     border-top-left-radius: 10px;
+}
+
+#borrar{
+    top:30px;
+    right: -40px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 #ancho{
@@ -194,29 +262,115 @@ canvas{
     width: 75px;
 }
 
-#instrumentos{
-    display: flex;
-    height: 100px;
+#bloqueoAux{
+    width: 820px;
+    height: 240px;
+    /* background-color: red; */
+    position:absolute;
+    top:100px;
+    z-index: -1;
+}
+
+#botDrums{display:none;}
+
+#bloqueoGral{
+    width: 900px;
+    height: 600px;
+    /* background-color: red; */
     position: absolute;
-    top:0px;
-    flex-direction: column-reverse;
-    flex-wrap: wrap;
+    top:-250px;
+    z-index: 2;
 }
-#contInst{
+
+#tutorial{
     display: flex;
-    height: 100px;
+    /* justify-content: center;
+    align-items: center; */
+    color: rgb(185, 185, 185);
+    position:absolute;
+    z-index: 3;
+    background-image: linear-gradient(to right, rgb(17, 17, 17),rgb(20, 20, 20),rgb(20, 20, 20), rgb(30, 30, 30));
+    border: solid 2px rgba(255, 255, 255, 0.774);
+    border-radius: 5px;
+    width: 250px;
+    height:80px;
+    overflow: hidden;
+    opacity: 0.95;
+    top:110px;
+    right: 250px;
+    transform: scale(1);
 }
-#instrumentos div{
-    width: 100px;
-    height: 23px;
-    color:rgb(110, 110, 110);
-    margin: 0.5px;
+
+/* #tutorial div{ */
+#barraTut,#textoTut,#saltar,#iniciar{
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(12, 12, 12);
+    position: absolute;
+    text-align: center;
+    position: absolute;
 }
 
+#saltar,#iniciar{
+    overflow: hidden;
+}
+
+#barraTut{
+    background-color: rgb(0, 0, 0);
+    width: 100%;
+    height: 35px;
+    top:0px;
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+
+#textoTut{
+    top:35px;
+    width: 100%;
+    height: 0px;
+    overflow: hidden;
+}
+
+#bloqueoTut{
+    background-color: rgba(0, 0, 0, 0.4);
+    position:absolute;
+    bottom:0px;
+    width: 100%;
+    height: 45px;
+    display: none;
+}
+
+#iniciar{left: 0px;bottom:0px; width: 50%;height: 45px;border-right: 1px solid rgba(255, 255, 255, 0.5);border-top:1px solid rgba(255,255,255,0.5)}
+#saltar{right:0px;bottom:0px; width: 50%;height: 45px;border-top:1px solid rgba(255,255,255,0.5)}
+
+
+  @keyframes crecer {
+    from {
+      transform: scale(0.05);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  @keyframes foco {
+    0% {
+      transform: scale(0.95);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(0.95);
+      opacity: 1;
+    }
+  }
+
+  #tutorial{
+    animation: crecer 0.5s normal ;
+  }
+
+/* #env{top:-102px;} */
 /* #ecu{top:-202px;} */
 /* #efectos{top:-202px;} */
 /* #instrumentos{top:-100px;} */

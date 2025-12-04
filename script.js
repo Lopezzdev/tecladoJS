@@ -28,7 +28,6 @@ const sampleRate = audioCtx.sampleRate; // Típicamente 44100
 let frecuencia=32.703; octava=2;cantCiclos=1;
 let indiceOnda=0,indiceEnv=0;
 let cantSources=50;
-// let cantSources=10;
 
 let boolEnv=false,boolAmp1=false,boolLow1=false,habLow1=false,boolHigh1=false,habHigh1=false;
 let amp1=[0.01,1,0.5,0.5,0.5],maxAmps=[10,10,1,10,1];boolCustom=false;
@@ -42,6 +41,8 @@ let trans=0,delaySt;
 let indiceEcu=null;
 let frecuenciaAux=20000,valorQaux=10,cantidadFiltros=4;
 let filtros=[],boolFiltros=[0,0,0,0],Xfiltros=[100,250,500,600],Yfiltros=[80,160,20,101],freqFiltros=[54,236,2779,7455],dBFiltros=[6.66,-6.66,16.66,3,16],Qfiltros=[0,1,5,0],xEcu,yEcu,qEcu;
+let minsEnv=[0.005,0.005,0,0.01,0,0],maxsEnv=[10,10,1,10,1,20];
+let minsFiltros=[0,0.005,0,0.01,0,0],maxsFiltros=[10,10,1,10,10000,20];
 
 let letras=["q","2","w","3","e","r","5","t","6","y","7","u","z","s","x","d","c","v","g","b","h","n","j","m",","];
 let letras2=["i","9","o","0","p","Dead","¿","+","Backspace","Enter","Insert","Delete","End"];
@@ -56,13 +57,12 @@ let anchoCuadrada=100,coefAncho=100/anchoCuadrada;
 
 for(i=0;i<cantArmonicos;i++){armonicosCustom[i]=0;}
 armonicosCustom[0]=1;
+armonicosCustom[1]=0.5;
+armonicosCustom[2]=0.3;
 
 cantArmonicosRandom=Math.round(Math.random()*cantArmonicos);
-for(i=0;i<cantArmonicosRandom;i++)armonicosRandom[i]=Math.random();
+for(i=0;i<cantArmonicosRandom;i++)armonicosRandom[i]=parseFloat(Math.random().toFixed(3));
 for(i=cantArmonicosRandom;i<cantArmonicos;i++)armonicosRandom[i]=0;
-
-let matrizRuido=[];
-for(i=0;i<sampleRate;i++)matrizRuido[i]=Math.random() * 0.4 - 0.2;
 
 //Crear la matriz con todas las notas
 let arrayRelaciones=[1,1.059,1.122,1.189,1.26,1.335,1.414,1.498,1.587,1.682,1.782,1.888,2];
@@ -70,7 +70,8 @@ let arrayRelaciones2=[0.707,0.749,0.793,0.841,0.891,0.944,1,1.059,1.122,1.189,1.
 for(i=0;i<13;i++){arrayRelaciones[i+12]=arrayRelaciones[i]*2;}
 for(i=0;i<25;i++){arrayRelaciones2[i+12]=arrayRelaciones2[i]*2;}
 
-let largosOnda=[],matrizNotas=[],sources=[];
+let largosOnda=[],matrizNotas=[],sources=[],ruido=[];
+let matrizRuido=new Float32Array(sampleRate);
 let ganancias=[],filtrosLow=[],filtrosHigh=[];
 let sonando=[],apretando=[],coef=[];distaux=[];
 
@@ -81,10 +82,9 @@ let reverbGain,reverbConv,reverbRes,reverbWet,reverbDry;
 let tremoloGain,tremoloLFO,tremoloInt,vibratoGain,vibratoLFO,pitchGain;
 let delay,delayFeedback,delayDry,delayWet,delayOut,reverbOut;
 
-let matrizEfectos=[[7,0.2,20],[0.6,0,1],[8,0.2,15],[0.03,0.01,0.1],[0.3,0.05,1],[0.4,0.05,0.8],[0.3,0,1],[0.4,0,1],[0,-2,2],[0.3,0,1],[0.3,0,0.9],[0.8,0,1]];
-//                  HzTremolo/intTremolo/HzVibrato/   IntVibrato  /  msDelay  /feedBack delay /IntDelay /IntReverb/intPitch/ msPitch / IntDist / CutDist
-// let boolFX=[false,false,false,false,false,false],selecRev=1,indiceFX=-1;
-let boolFX=[false,false,false,false,false,false],selecRev=1,indiceFX=-1;
+let matrizEfectos=[[7,0.2,20],[0.6,0,1],[8,0.2,15],[0.03,0.01,0.1],[0.3,0.05,1],[0.4,0.05,0.8],[0.3,0,1],[0.4,0,1],[0,-2,2],[0.3,0,1],[0.3,0,0.9],[0.8,0,1],[0.05,0,1]];
+//                  HzTremolo/intTremolo/HzVibrato/   IntVibrato  /  msDelay  /feedBack delay /IntDelay /IntReverb/intPitch/ msPitch / IntDist / CutDist   /  Ruido
+let boolFX=[false,false,false,false,false,false,false],selecRev=1,indiceFX=-1;
 
 for(i=0;i<cantSources;i++){
     sources[i]=audioCtx.createBufferSource();
@@ -109,6 +109,8 @@ for(i=0;i<4;i++){
 
 filtrosFijos();
 
+for(i=0;i<sampleRate;i++)matrizRuido[i]=Math.random() * amp1[4] - 0.2;
+
 function crearArrays(){  
 
   silenciar();
@@ -120,6 +122,8 @@ function crearArrays(){
     largosOnda[i]=Math.round(largosOnda[i]);   
   }
 
+  for(i=0;i<sampleRate;i++)matrizRuido[i]=Math.random() * amp1[4] - 0.2;
+
   for(i=0;i<arrayRelaciones.length;i++){
     matrizNotas[i]=new Float32Array(Math.round(largosOnda[i]));
   }
@@ -129,12 +133,14 @@ function crearArrays(){
     case 1:crearOndaCuadrada();break;
     case 2:crearOndaTriangular();break;
     case 3:crearRandom();break;
-    case 4:crearRuido();break;
-    case 5:crearCustom();break;
+    // case 4:crearDrums();break;
+    // case 4:auxInst=true;break;
+    // case 5:crearCustom();break;
+    case 4:crearCustom();break;
   }
   
   let max=0;
-  if(indiceOnda==3||indiceOnda==5){
+  if(indiceOnda==3||indiceOnda==4){
     for(i=0;i<largosOnda[0];i++){if(matrizNotas[0][i]>max)max=matrizNotas[0][i]}
 
     max=amp1[4]*0.2/max;
@@ -146,7 +152,17 @@ function crearArrays(){
     }
   };
 
-  if(indiceOnda!=4&&boolFX[5])sumardist();
+  
+  //Escalado por cantidad reverb
+  if(boolFX[3]){
+    for(j=0;j<arrayRelaciones.length;j++){
+      for(i=0;i<largosOnda[j];i++){
+          matrizNotas[j][i]+=matrizEfectos[7][0]*matrizNotas[j][i]*5;
+      }
+    }
+  }
+  
+  if(boolFX[5])sumardist();
 
   // crearReverb();
   muestreo();
@@ -228,7 +244,8 @@ function sumardist(){
 
         for(k=0;k<cantArmonicos;k++){
           // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(k+1));
-          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(0.25*(k+1)));
+          // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(0.25*(k+1)));
+          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*amp1[4]);
         }
       }
       
@@ -236,16 +253,6 @@ function sumardist(){
 
     muestreoEnv1();
     
-  }
-
-  function crearRuido(){
-    for(j=0;j<arrayRelaciones.length;j++){
-      matrizNotas[j]=new Float32Array(sampleRate);
-      largosOnda[j]=sampleRate;
-      for(i=0;i<sampleRate;i++){
-        matrizNotas[j][i]=matrizRuido[i]*amp1[4];
-      }
-    }
   }
 
   function crearCustom(){
@@ -261,8 +268,7 @@ function sumardist(){
 
         matrizNotas[j][i]=0;
         for(k=0;k<armonicosCustom.length;k++){
-          // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*0.4*amp1[4]/(2*(k+1)));
-          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*0.4*amp1[4]);
+          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*amp1[4]);
         }
       }
     }
@@ -271,7 +277,7 @@ function sumardist(){
 
   }
 }
-
+let trigg=0;
 //Reproducir
 let ahora,src=0,ultimoSource=[];
 async function reproducir(nota){
@@ -285,12 +291,14 @@ async function reproducir(nota){
 
     setTimeout(() => {
       sources[srcAux2].stop();
+      try{ruido[srcAux2].stop();}catch(e){}
       muestreo();
     }, 0.01*1000+200);
   }
 
   try {
   sources[src].disconnect();
+  ruido[src].disconnect();
   ganancias[src].disconnect();
   filtrosHigh[src].disconnect();
   filtrosLow[src].disconnect();
@@ -306,6 +314,13 @@ async function reproducir(nota){
   sources[src].loop=true;
   sources[src].buffer = buffer;
 
+  let buffer2 = audioCtx.createBuffer(1, sampleRate, sampleRate);
+  buffer2.copyToChannel(matrizRuido, 0);
+
+  ruido[src]= audioCtx.createBufferSource();
+  ruido[src].loop=true;
+  ruido[src].buffer = buffer2;
+
   //Creando envolvente de ganancia
   ahora = audioCtx.currentTime;
 
@@ -318,9 +333,22 @@ async function reproducir(nota){
 
   salidaFiltros[src]=audioCtx.createGain();
 
-  sources[src].connect(ganancias[src]).connect(filtrosHigh[src]).connect(filtrosLow[src]).connect(salidaFiltros[src]);
+  let gainRuido=audioCtx.createGain();
+  let gainSonido=audioCtx.createGain();
+  gainRuido.gain.value=matrizEfectos[12][0];
+  gainSonido.gain.value=1-matrizEfectos[12][0];
+  if(!boolFX[6]){
+    gainRuido.gain.value=0;
+    gainSonido.gain.value=1;
+  }
+
+  sources[src].connect(gainSonido).connect(ganancias[src]).connect(filtrosHigh[src]).connect(filtrosLow[src]).connect(salidaFiltros[src]);
 
   agregarEfectos();
+
+  //Ruido
+  ruido[src].connect(gainRuido).connect(ganancias[src]);
+  if(boolFX[6])ruido[src].start();
 
   //Delay
   delay.delayTime.value=matrizEfectos[4][0];
@@ -429,7 +457,7 @@ function agregarEfectos(){
   vibratoLFO=audioCtx.createOscillator();
 
   vibratoLFO.frequency.value=matrizEfectos[2][0];
-  vibratoGain.gain.value= matrizEfectos[3][0];
+  vibratoGain.gain.value= matrizEfectos[3][0]*0.4;
   if(!boolFX[1]||matrizEfectos[2][0]==0)vibratoGain.gain.value=0;
 
   vibratoLFO.connect(vibratoGain).connect(sources[src].playbackRate);
@@ -496,6 +524,8 @@ function detener(nota){
     try{
       sonando[nota]=false;
       sources[srcAux].stop();
+      // ruido[srcAux].stop();
+      // ruido[0].stop();
       muestreo();
     }catch{}
     }, amp1[3]*1000);
@@ -508,17 +538,19 @@ function transponer(st){
   trans+=st;
   if(trans<-6)trans=-6;
   if(trans>6)trans=6;
+
+  if(st==0)trans=0;
   
   for(i=0;i<arrayRelaciones.length;i++)arrayRelaciones[i]=arrayRelaciones2[i+6+trans];
   
   if(trans<=0)document.querySelector("#trans").innerHTML=`${trans} st`;
   else document.querySelector("#trans").innerHTML=`+${trans} st`;
 
-  document.querySelector("#trans").style.cssText="top:-30px;transition:top 0.2s;";
+  if(st!=0)document.querySelector("#trans").style.cssText="top:-30px;transition:top 0.2s;";
 
-  delaySt=setTimeout(() => {
-    document.querySelector("#trans").style.cssText="top:0px;transition:top 0.5s;";
-  }, 2000);
+    delaySt=setTimeout(() => {
+      document.querySelector("#trans").style.cssText="top:0px;transition:top 0.5s;";
+    }, 2000);
 
   crearArrays();
 
@@ -536,11 +568,13 @@ function clickEnv1(){
   let total=580;
   let posCanvas = canvasAmp.getBoundingClientRect();
   
-  posX=Math.floor(event.clientX-posCanvas.left);
+  if(!esTactil)posX=Math.floor((event.clientX-posCanvas.left)/coefZoom);
+  else posX=Math.floor((event.touches[0].clientX - posCanvas.left)/coefZoom);
 
   if(!triggerAmp1){
 
-    posY=Math.floor(event.clientY-posCanvas.top);
+    if(!esTactil)posY=Math.floor((event.clientY-posCanvas.top)/coefZoom);
+    else posY=Math.floor((event.touches[0].clientY-posCanvas.top)/coefZoom);
 
     if(posX>=135&&posX<=151&&posY>=123&&posY<=139){
       if(indiceEnv==2)habLow1=!habLow1;
@@ -557,52 +591,43 @@ function clickEnv1(){
   triggerAmp1=true;
 
   if(indiceEnv==1){
-    posX=posX*maxAmps[posY]/total;
+    
+    if(posY==2||posY==4)posX=posX*maxAmps[posY]/total;
+    else posX=minsEnv[posY]+(posX*posX*posX)/(34000*total);
+    posX=parseFloat(posX.toFixed(5));
+    
     if(posY<5)amp1[posY]=posX;
+
   }
   if(indiceEnv==2){
-    posX=posX*maxFiltros[posY]/total;
+    if(posY==2||posY==5)posX=posX*maxFiltros[posY]/total;
+    else posX=minsFiltros[posY]+(posX*posX*posX)/(34000*total);
+    if(posY==4)posX*=1000;
+    posX=parseFloat(posX.toFixed(5));
+    
     if(posY<6)filtroLow1[posY]=posX;
   }
   if(indiceEnv==3){
-    posX=posX*maxFiltros[posY]/total;
+    if(posY==2||posY==5)posX=posX*maxFiltros[posY]/total;
+    else posX=minsFiltros[posY]+(posX*posX*posX)/(34000*total);
+    if(posY==4)posX*=1000;
+    posX=parseFloat(posX.toFixed(5));
+
     if(posY<6)filtroHigh1[posY]=posX;
   }
 
-  if(amp1[0]<0.005)amp1[0]=0.005;
-  if(amp1[1]<0.005)amp1[1]=0.005;
-  if(amp1[3]<0.01)amp1[3]=0.01;
-  if(amp1[0]>10)amp1[0]=10;
-  if(amp1[1]>10)amp1[1]=10;
-  if(amp1[3]>10)amp1[3]=10;
-  if(amp1[2]>1)amp1[2]=1;
-  if(amp1[2]<0)amp1[2]=0;
-  if(amp1[4]<0)amp1[4]=0;
-  if(amp1[4]>1)amp1[4]=1;
-
-  if(filtroLow1[0]<0)filtroLow1[0]=0;
-  if(filtroLow1[1]<0.005)filtroLow1[1]=0.005;
-  if(filtroLow1[3]<0.005)filtroLow1[3]=0.005;
-  if(filtroLow1[0]>10)filtroLow1[0]=10;
-  if(filtroLow1[1]>10)filtroLow1[1]=10;
-  if(filtroLow1[3]>10)filtroLow1[3]=10;
-  if(filtroLow1[2]>1)filtroLow1[2]=1;
-  if(filtroLow1[2]<0)filtroLow1[2]=0;
-  if(filtroLow1[4]<0)filtroLow1[4]=0;
-  if(filtroLow1[4]>10000)filtroLow1[4]=10000;
-  if(filtroLow1[5]>20)filtroLow1[5]=20;
-
-  if(filtroHigh1[0]<0)filtroHigh1[0]=0;
-  if(filtroHigh1[1]<0.005)filtroHigh1[1]=0.005;
-  if(filtroHigh1[3]<0.005)filtroHigh1[3]=0.005;
-  if(filtroHigh1[0]>10)filtroHigh1[0]=10;
-  if(filtroHigh1[1]>10)filtroHigh1[1]=10;
-  if(filtroHigh1[3]>10)filtroHigh1[3]=10;
-  if(filtroHigh1[2]>1)filtroHigh1[2]=1;
-  if(filtroHigh1[2]<0)filtroHigh1[2]=0;
-  if(filtroHigh1[4]<0)filtroHigh1[4]=0;
-  if(filtroHigh1[4]>10000)filtroHigh1[4]=10000;
-  if(filtroHigh1[5]>20)filtroHigh1[5]=20;
+  for(i=0;i<=5;i++){
+    if(amp1[i]<minsEnv[i])amp1[i]=minsEnv[i];
+    if(amp1[i]>maxsEnv[i])amp1[i]=maxsEnv[i];
+  }
+  for(i=0;i<=5;i++){
+    if(filtroLow1[i]<minsFiltros[i])filtroLow1[i]=minsFiltros[i];
+    if(filtroLow1[i]>maxsFiltros[i])filtroLow1[i]=maxsFiltros[i];
+  }
+  for(i=0;i<=5;i++){
+    if(filtroHigh1[i]<minsFiltros[i])filtroHigh1[i]=minsFiltros[i];
+    if(filtroHigh1[i]>maxsFiltros[i])filtroHigh1[i]=maxsFiltros[i];
+  }
 
   crearArrays();
   muestreoEnv1();
@@ -613,18 +638,21 @@ function clickCustom(){
 
   let posCanvas = canvasCustom.getBoundingClientRect();
 
-  // posY2=1+(posCanvas.top-event.clientY)/(canvasCustom.height);
-  posY2=1+(posCanvas.top-event.clientY)/(canvasCustom.height)-0.01;
+  if(!esTactil) posY2=1*coefZoom+(posCanvas.top-event.clientY)/(canvasCustom.height)-0.01;
+  else posY2=1*coefZoom+(posCanvas.top-event.touches[0].clientY)/(canvasCustom.height)-0.01;
+
+  posY2=posY2/coefZoom;
   posY2=parseFloat(posY2.toFixed(2));
-  p(posY2)
 
   if(!triggerCustom){
-    posX2=(event.clientX-posCanvas.left-2)/anchoColumna;
+    if(!esTactil) posX2=(event.clientX-posCanvas.left-2)/anchoColumna;
+    else posX2=(event.touches[0].clientX-posCanvas.left-2)/anchoColumna;
+    posX2=posX2/coefZoom;
     posX2=Math.floor(posX2);
     if(posX2<0)posX2=0;
     if(posX2>cantArmonicos)posX2=cantArmonicos;
   }
-  triggerCustom=true;
+  triggerCustom=true;  
 
   if(indiceOnda==3)armonicosRandom[posX2]=posY2;
   else armonicosCustom[posX2]=posY2;
@@ -638,6 +666,7 @@ function clickAncho(){
   let posCanvas = canvasAncho.getBoundingClientRect();
 
   posY3=Math.floor(event.clientY-posCanvas.bottom);
+  posY3=posY3/coefZoom;
   if(posY3<-192)posY3=-192;
   if(posY3>-5)posY3=-5;
   anchoCuadrada=-posY3/1.92;
@@ -651,20 +680,20 @@ function clickAncho(){
 function clickEcu(){
   let rect = canvasEcu.getBoundingClientRect();
 
-  // mouseX=event.clientX - rect.left;
-  // mouseY=event.clientY - rect.top;
+  try{
+    if(!esTactil){
+      mouseX = event.clientX - rect.left;
+      mouseY = event.clientY - rect.top;
+    }else{
+      mouseX = event.touches[0].clientX - rect.left;
+      mouseY = event.touches[0].clientY - rect.top;
+    }
 
-  if(!esTactil){
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
-  }else{
-    mouseX = event.touches[0].clientX - rect.left;
-    mouseY = event.touches[0].clientY - rect.top;
-  }
+  mouseX=mouseX/coefZoom;
+  mouseY=mouseY/coefZoom;
 
   for(i=0;i<cantidadFiltros;i++){
-        // if(mouseX>=Xfiltros[i]-6&&mouseX<=Xfiltros[i]+6&&mouseY>=Yfiltros[i]-6&&mouseY<=Yfiltros[i]+6&&indiceEcu==null)indiceEcu=i;;
-        if(mouseX>=Xfiltros[i]-16&&mouseX<=Xfiltros[i]+16&&mouseY>=Yfiltros[i]-16&&mouseY<=Yfiltros[i]+16&&indiceEcu==null)indiceEcu=i;;
+        if(mouseX>=Xfiltros[i]-16&&mouseX<=Xfiltros[i]+16&&mouseY>=Yfiltros[i]-16&&mouseY<=Yfiltros[i]+16&&indiceEcu==null)indiceEcu=i;
   }
 
   if(indiceEcu==null)indiceEcu=999;
@@ -681,33 +710,68 @@ function clickEcu(){
       if(boolFiltros[indiceEcu]&&(indiceEcu==0||indiceEcu==3))filtros[indiceEcu].Q.value=valorQaux;
       if(boolFiltros[indiceEcu]&&(indiceEcu==1||indiceEcu==2))filtros[indiceEcu].gain.value=valorQaux;
       dBFiltros[indiceEcu]=valorQaux;
+
   }
+
+  
+  }catch{}
+
+  for(i=0;i<4;i++){
+      let t = Math.min(Math.max(Xfiltros[i] / 700, 0), 1);
+      frecuenciaAux=Math.round(20 * Math.pow(20000 / 20, t));
+      if(boolFiltros[i])filtros[i].frequency.value=frecuenciaAux;
+      freqFiltros[i]=frecuenciaAux;
+
+      valorQaux=20-Yfiltros[i]/6;
+      if(boolFiltros[i]&&(i==0||i==3))filtros[i].Q.value=valorQaux;
+      if(boolFiltros[i]&&(i==1||i==2))filtros[i].gain.value=valorQaux;
+      dBFiltros[i]=valorQaux;
+  }
+
+
+  if(!boolFiltros[0]){filtros[0].Q.value=0;filtros[0].frequency.value=0;}
+  if(!boolFiltros[1]){filtros[1].gain.value=0;}
+  if(!boolFiltros[2]){filtros[2].gain.value=0;}
+  if(!boolFiltros[3]){filtros[3].Q.value=0;filtros[3].frequency.value=24000;}
 
   muestreoEcu();
 
 }
 
 function clickFX(){
-  let rect = canvasEcu.getBoundingClientRect();
+  let rect = canvasFX.getBoundingClientRect();
 
-  mouseX=event.clientX - rect.left;
-  mouseY=rect.top-event.clientY;
-  
+  if(!esTactil){
+    mouseX=event.clientX - rect.left;
+    // mouseY=rect.top-event.clientY;
+    mouseY=event.clientY - rect.top;
+  }else{
+    mouseX = event.touches[0].clientX - rect.left;
+    mouseY = rect.top - event.touches[0].clientY;
+  }
+
+  mouseX=mouseX/coefZoom;
+  mouseY=mouseY/coefZoom;
+  if(esTactil)mouseY*=-1;
+
   if(!triggerFX){
     for(i=0;i<xBoolFX.length;i++){
-      if(mouseX>=xBoolFX[i]&&mouseX<=xBoolFX[i]+15&&mouseY<=185&&mouseY>=170)boolFX[i]=!boolFX[i];
+      // if(mouseX>=xBoolFX[i]&&mouseX<=xBoolFX[i]+15&&mouseY<=185&&mouseY>=170)boolFX[i]=!boolFX[i];
+      // if(mouseX>=xBoolFX[i]-5&&mouseX<=xBoolFX[i]+20&&mouseY<=190&&mouseY>=165)boolFX[i]=!boolFX[i];
+      if(mouseX>=xBoolFX[i]-5&&mouseX<=xBoolFX[i]+20&&mouseY<=35&&mouseY>=15)boolFX[i]=!boolFX[i];
     }
   }
 
   if(!triggerFX){
-    if(mouseX>=386&&mouseX<=406&&mouseY>=124&&mouseY<=144){selecRev=0;crearReverb();};
-    if(mouseX>=386&&mouseX<=406&&mouseY>=92&&mouseY<=112){selecRev=1;crearReverb();};
-    if(mouseX>=386&&mouseX<=406&&mouseY>=56&&mouseY<=76){selecRev=2;crearReverb();};
+    if(mouseX>=370&&mouseX<=390&&mouseY>=40&&mouseY<=55){selecRev=0;crearReverb();};
+    if(mouseX>=370&&mouseX<=390&&mouseY>=70&&mouseY<=90){selecRev=1;crearReverb();};
+    if(mouseX>=370&&mouseX<=390&&mouseY>=105&&mouseY<=125){selecRev=2;crearReverb();};
+    if(mouseX>=370&&mouseX<=390&&mouseY>=145&&mouseY<=165){selecRev=3;crearReverb();};
   }
 
   if(!triggerFX){
     for(i=0;i<xFX.length;i++){
-      if(mouseX>=xFX[i]&&mouseX<=xFX[i]+28&&mouseY>=32&&mouseY<=162)indiceFX=i;
+      if(mouseX>=xFX[i]&&mouseX<=xFX[i]+28&&mouseY>=42&&mouseY<=172)indiceFX=i;
     }
   }
 
@@ -715,7 +779,7 @@ function clickFX(){
 
     let min=matrizEfectos[indiceFX][1],max=matrizEfectos[indiceFX][2];
 
-    let yAux=Math.round(mouseY-32);
+    let yAux=Math.round(130-mouseY+42);
     if(yAux<0)yAux=0;if(yAux>130)yAux=130;
     matrizEfectos[indiceFX][0]=min + (yAux / 130) * (max - min);
 
@@ -749,11 +813,12 @@ function silenciar(){
 
 
 document.querySelector("#refrescar").addEventListener("mousedown",()=>{
-  if(indiceOnda==5&&indiceEnv==0){for(i=0;i<cantArmonicos;i++)armonicosCustom[i]=0;mostrarCustom();}
+  // if(indiceOnda==5&&indiceEnv==0){for(i=0;i<cantArmonicos;i++)armonicosCustom[i]=0;mostrarCustom();}
+  if(indiceOnda==4&&indiceEnv==0){for(i=0;i<cantArmonicos;i++)armonicosCustom[i]=0;mostrarCustom();}
   if(indiceOnda==3&&indiceEnv==0){
     armonicosRandom.splice(0,armonicosRandom.length);
     cantArmonicosRandom=Math.round(Math.random()*cantArmonicos);
-    for(i=0;i<cantArmonicosRandom;i++)armonicosRandom[i]=Math.random();
+    for(i=0;i<cantArmonicosRandom;i++)armonicosRandom[i]=parseFloat(Math.random().toFixed(3));
     for(i=cantArmonicosRandom;i<cantArmonicos;i++)armonicosRandom[i]=0;
     mostrarCustom();crearArrays();
   }
@@ -809,10 +874,45 @@ document.querySelector("#refrescar").addEventListener("mousedown",()=>{
   muestreoEnv1();
 
 })
+document.querySelector("#borrar").addEventListener("mousedown",borrar);
 
+function borrar(){
+  indiceOnda=0;
+  
+  boolEnv=false,boolAmp1=false,boolLow1=false,habLow1=false,boolHigh1=false,habHigh1=false;
+  amp1=[0.01,1,0.5,0.5,0.5],maxAmps=[10,10,1,10,1];boolCustom=false;
+  filtroLow1=[1,1,0.3,0.5,1500,10],maxFiltros=[10,10,1,10,10000,20];
+  filtroHigh1=[1,1,0.3,0.5,1500,10];
+  armonicosCustom=[1,0.5,0.3];
+  indiceInst=0;
 
+  boolFiltros=[0,0,0,0],Xfiltros=[100,250,500,600],Yfiltros=[80,160,20,101],freqFiltros=[54,236,2779,7455],dBFiltros=[6.66,-6.66,16.66,3,16],Qfiltros=[0,1,5,0],xEcu,yEcu,qEcu;
+  
+  matrizEfectos=[[7,0.2,20],[0.6,0,1],[8,0.2,15],[0.03,0.01,0.1],[0.3,0.05,1],[0.4,0.05,0.8],[0.3,0,1],[0.4,0,1],[0,-2,2],[0.3,0,1],[0.3,0,0.9],[0.8,0,1],[0.2,0,1]];
+  boolFX=[false,false,false,false,false,false,false],selecRev=1,indiceFX=-1;
+
+  octava=2;
+
+  transponer(0);
+
+  muestreoFX();muestreoEcu();muestreoEnv1();
+
+  document.querySelector("#ancho").style.cssText="left:10px;transition:left 0.5s;";
+  document.querySelector("#instrumentos").style.cssText="top:0px;transition:top 0.5s;";
+
+  crearArrays();
+}
 
 const esTactil = window.matchMedia('(pointer: coarse)').matches;
+
+if(esTactil){
+    scrollStyle = document.createElement('style');
+    scrollStyle.textContent = `
+      ::-webkit-scrollbar { display: none; }
+      * { scrollbar-width: none; }
+    `;
+    document.head.appendChild(scrollStyle); 
+}
 let notasClick=[];
 let patronPiano=[0,1,2,1,0,0,1,2,1,2,1,0,0,1,2,1,0,0,1,2,1,2,1,0,0];
 
@@ -835,6 +935,9 @@ function clickear(event){
     mouseX = event.touches[dedo].clientX - rect.left;
     mouseY = event.touches[dedo].clientY - rect.top;
   }
+  
+  mouseX=mouseX/coefZoom;
+  mouseY=mouseY/coefZoom;
 
   let nota;
   let XX=0,XXaux=0;
@@ -888,9 +991,11 @@ function detenerClick(event){
   apretando[notaClick]=false;
 
   const t = audioCtx.currentTime;
-  ganancias[srcAux].gain.cancelScheduledValues(t);
-  ganancias[srcAux].gain.setValueAtTime(ganancias[srcAux].gain.value, t);
-  ganancias[srcAux].gain.linearRampToValueAtTime(0, t + amp1[3]);
+  try{
+    ganancias[srcAux].gain.cancelScheduledValues(t);
+    ganancias[srcAux].gain.setValueAtTime(ganancias[srcAux].gain.value, t);
+    ganancias[srcAux].gain.linearRampToValueAtTime(0, t + amp1[3]);
+  }catch{}
 
   setTimeout(() => {
     try{
@@ -908,3 +1013,4 @@ function funcionDebug2(){
 function p(cosa="XD"){
   console.log(cosa);
 }
+

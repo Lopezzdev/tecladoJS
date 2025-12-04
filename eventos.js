@@ -15,7 +15,7 @@ document.querySelector("#botCentrar").addEventListener("mousedown",bloqueo);
 
 document.querySelector("#botones").addEventListener("touchstart",desbloqueo);
 document.querySelector("#botones").addEventListener("mousedown",desbloqueo);
-document.querySelector("#botAyuda").addEventListener("mousedown",bloqueo);
+document.querySelector("#botAyuda").addEventListener("mousedown",desbloqueo);
 
 function desbloqueo(){
   document.querySelector("#botCentrar").innerHTML=`<img src="./media/bloqueo.png" alt="">`;
@@ -27,8 +27,6 @@ function bloqueo(){
   document.querySelector("#botCentrar").innerHTML=`<img src="./media/desbloqueo.png" alt="">`
   try{event.stopPropagation();}catch{}
 }
-
-bloqueo();
 
 //Leer entrada de teclado
 document.addEventListener("keydown",(event)=>{

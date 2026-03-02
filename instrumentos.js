@@ -15,7 +15,7 @@ function cambiarInst(){
 
   switch(indiceInst){
     case 0:   //Piano - sustain
-      armonicosCustom=[1,0.6,0.8,0.6,0.5,0.45,0.3,0.15,0.1,0.15,0.1,0.12,0.06,0.06,0.1,0.05,0.02,0.01,0.01,0.02,0.04,0.02];
+      armonicosCustom=[0.6,1,0.8,0.6,0.5,0.45,0.3,0.15,0.1,0.15,0.1,0.12,0.06,0.06,0.1,0.05,0.02,0.01,0.01,0.02,0.04,0.02];
       amp1=[0.005,0.018,0.75,0.651,0.7];
       filtroLow1=[0,0.6,0.5,2,1660,0];
       habLow1=true;      
@@ -29,7 +29,7 @@ function cambiarInst(){
       octava=1;
       break;
     case 1:   //Piano
-      armonicosCustom=[1,0.6,0.8,0.6,0.5,0.45,0.3,0.15,0.1,0.15,0.1,0.12,0.06,0.06,0.1,0.05,0.02,0.01,0.01,0.02,0.04,0.02];
+      armonicosCustom=[0.8,1,0.8,0.6,0.5,0.45,0.3,0.15,0.1,0.15,0.1,0.12,0.06,0.06,0.1,0.05,0.02,0.01,0.01,0.02,0.04,0.02];
       amp1=[0.005,0.018,0.75,0.1,0.7];
       filtroLow1=[0,0.6,0.5,2,1660,0];
       habLow1=true;      
@@ -330,20 +330,6 @@ function cambiarInst(){
 
 }
 
-function obtenerIndice(notaMidi) {
-  const base = notaMidi % 12; 
-  const octava = Math.floor(notaMidi / 12); 
-
-  const octavaRelativa = (octava - 1); // Ajuste para centrar
-
-  let indice = base + (octavaRelativa * 12);
-
-  if (indice < 0) indice = 0;
-  if (indice > 24) indice = 24;
-
-  return indice;
-}
-
 if (navigator.requestMIDIAccess)navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
 
 function onMIDISuccess(midiAccess) {
@@ -358,9 +344,11 @@ function onMIDIFailure() {
 
 function handleMIDIMessage(event) {
   const [status, note, velocity] = event.data;
-
+  
+  // p(event.data);
+  
   const tipo = status & 0xf0;
-  const indice = obtenerIndice(note);
+  const indice = note-12;
 
   if (tipo === 0x90 && velocity > 0) {
     reproducir(indice);

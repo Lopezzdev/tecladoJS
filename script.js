@@ -24,8 +24,7 @@ let ctxDebug = canvasDebug.getContext("2d");
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const sampleRate = audioCtx.sampleRate; // Típicamente 44100
 
-// let frecuencia=65.4; octava=1;cantCiclos=1;
-let frecuencia=32.703; octava=2;cantCiclos=1;
+let frecuencia=32.703; octava=2;
 let indiceOnda=0,indiceEnv=0;
 let cantSources=50;
 
@@ -65,6 +64,12 @@ for(i=0;i<cantArmonicosRandom;i++)armonicosRandom[i]=parseFloat(Math.random().to
 for(i=cantArmonicosRandom;i<cantArmonicos;i++)armonicosRandom[i]=0;
 
 //Crear la matriz con todas las notas
+let arrayFrecuencias=[16.352,17.324,18.354,19.445,20.602,21.827,23.125,24.5,25.956,27.5,29.135,30.868];
+let arrayFrecuencias2=[];
+for(i=0;i<9;i++)
+  for(j=0;j<arrayFrecuencias.length;j++)
+    arrayFrecuencias2.push(arrayFrecuencias[j]*Math.pow(2,i));
+
 let arrayRelaciones=[1,1.059,1.122,1.189,1.26,1.335,1.414,1.498,1.587,1.682,1.782,1.888,2];
 let arrayRelaciones2=[0.707,0.749,0.793,0.841,0.891,0.944,1,1.059,1.122,1.189,1.26,1.335];
 for(i=0;i<13;i++){arrayRelaciones[i+12]=arrayRelaciones[i]*2;}
@@ -115,8 +120,8 @@ function crearArrays(){
 
   silenciar();
 
-  for(i=0;i<arrayRelaciones.length;i++){
-    largosOnda[i]=cantCiclos*sampleRate/(frecuencia*Math.pow(2,octava)*arrayRelaciones[i]);
+  for(i=0;i<arrayFrecuencias2.length;i++){
+    largosOnda[i]=sampleRate/arrayFrecuencias2[i];
     
     coef[i]=largosOnda[i]/(Math.round(largosOnda[i]));
     largosOnda[i]=Math.round(largosOnda[i]);   
@@ -124,7 +129,7 @@ function crearArrays(){
 
   for(i=0;i<sampleRate;i++)matrizRuido[i]=Math.random() * amp1[4] - 0.2;
 
-  for(i=0;i<arrayRelaciones.length;i++){
+  for(i=0;i<arrayFrecuencias2.length;i++){
     matrizNotas[i]=new Float32Array(Math.round(largosOnda[i]));
   }
 
@@ -141,11 +146,11 @@ function crearArrays(){
   
   let max=0;
   if(indiceOnda==3||indiceOnda==4){
-    for(i=0;i<largosOnda[0];i++){if(matrizNotas[0][i]>max)max=matrizNotas[0][i]}
+    for(i=0;i<largosOnda[0];i++)if(matrizNotas[0][i]>max)max=matrizNotas[0][i]
 
     max=amp1[4]*0.2/max;
 
-    for(j=0;j<arrayRelaciones.length;j++){
+    for(j=0;j<arrayFrecuencias2.length;j++){
       for(i=0;i<largosOnda[j];i++){
         matrizNotas[j][i]*=max;
       }
@@ -155,7 +160,7 @@ function crearArrays(){
   
   //Escalado por cantidad reverb
   if(boolFX[3]){
-    for(j=0;j<arrayRelaciones.length;j++){
+    for(j=0;j<arrayFrecuencias2.length;j++){
       for(i=0;i<largosOnda[j];i++){
           matrizNotas[j][i]+=matrizEfectos[7][0]*matrizNotas[j][i]*5;
       }
@@ -180,7 +185,7 @@ function sumardist(){
   for(i=0;i<largosOnda[0];i++)if(matrizNotas[0][i]>max)max=matrizNotas[0][i];
 
   //Recorte
-  for(j=0;j<arrayRelaciones.length;j++){
+  for(j=0;j<arrayFrecuencias2.length;j++){
     for(i=0;i<largosOnda[j];i++){
         if(matrizNotas[j][i]>(max*(1-umbral)))matrizNotas[j][i]=(1-dureza)*[matrizNotas[j][i]-max*(1-umbral)]+max*(1-umbral);
         if(matrizNotas[j][i]<-(max*(1-umbral)))matrizNotas[j][i]=-(1-dureza)*[-matrizNotas[j][i]-max*(1-umbral)]-max*(1-umbral);
@@ -192,7 +197,7 @@ function sumardist(){
   for(i=0;i<largosOnda[0];i++)if(matrizNotas[0][i]>max2)max2=matrizNotas[0][i];
 
   //Escalado
-  for(j=0;j<arrayRelaciones.length;j++){
+  for(j=0;j<arrayFrecuencias2.length;j++){
     for(i=0;i<largosOnda[j];i++){
         matrizNotas[j][i]*=max/max2;
     }
@@ -203,18 +208,17 @@ function sumardist(){
 //Crear ondas
 {
   function crearOndaSeno(){
-    for(j=0;j<arrayRelaciones.length;j++){
+    for(j=0;j<arrayFrecuencias2.length;j++){
       for(i=0;i<largosOnda[j];i++){
-        matrizNotas[j][i]=Math.sin(2*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*0.4*amp1[4];
+        matrizNotas[j][i]=Math.sin(2*Math.PI*arrayFrecuencias2[j]*coef[j]*(i+1)/sampleRate)*0.4*amp1[4];
         matrizNotas[j][i]*=-1;
       }
     }
   }
 
   function crearOndaCuadrada(){
-    for(j=0;j<arrayRelaciones.length;j++){
+    for(j=0;j<arrayFrecuencias2.length;j++){
       for(i=0;i<largosOnda[j];i++){
-        // if(i>(largosOnda[j]/(2)))matrizNotas[j][i]=0.2*amp1[4];
         if(i>(largosOnda[j]/(2*coefAncho)))matrizNotas[j][i]=0.2*amp1[4];
         else matrizNotas[j][i]=-0.2*amp1[4];
       }
@@ -222,7 +226,7 @@ function sumardist(){
   }
 
   function crearOndaTriangular(){
-    for(j=0;j<arrayRelaciones.length;j++){
+    for(j=0;j<arrayFrecuencias2.length;j++){
       for(i=0;i<largosOnda[j];i++){
         matrizNotas[j][i]=(2*i/largosOnda[j]-1)*0.2*amp1[4];
       }
@@ -236,7 +240,7 @@ function sumardist(){
     for(i=0;i<armonicosRandom.length;i++)if(armonicosRandom[i]>0)bool0=true;
     if(!bool0){crearOndaSeno();return;}
       
-    for(j=0;j<arrayRelaciones.length;j++){
+    for(j=0;j<arrayFrecuencias2.length;j++){
 
       for(i=0;i<largosOnda[j];i++){
 
@@ -245,7 +249,7 @@ function sumardist(){
         for(k=0;k<cantArmonicos;k++){
           // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(k+1));
           // matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*0.4*amp1[4]/(0.25*(k+1)));
-          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosRandom[k]*amp1[4]);
+          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*arrayFrecuencias2[j]*coef[j]*(i+1)/sampleRate)*(armonicosRandom[k]*amp1[4]);
         }
       }
       
@@ -262,13 +266,13 @@ function sumardist(){
     for(i=0;i<armonicosCustom.length;i++)if(armonicosCustom[i]>0)bool0=true;
     if(!bool0){crearOndaSeno();return;}
 
-    for(j=0;j<arrayRelaciones.length;j++){
+    for(j=0;j<arrayFrecuencias2.length;j++){
 
       for(i=0;i<largosOnda[j];i++){
 
         matrizNotas[j][i]=0;
         for(k=0;k<armonicosCustom.length;k++){
-          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*frecuencia*arrayRelaciones[j]*coef[j]*(Math.pow(2,octava))*(i+1)/sampleRate)*(armonicosCustom[k]*amp1[4]);
+          matrizNotas[j][i]-=Math.sin(2*(k+1)*Math.PI*arrayFrecuencias2[j]*coef[j]*(i+1)/sampleRate)*(armonicosCustom[k]*amp1[4]);
         }
       }
     }
@@ -383,7 +387,7 @@ async function reproducir(nota){
 
 function agregarFiltros(nota){
   //Creando envolvente de filtros dinámicos
-  let frecuenciaNota=frecuencia*arrayRelaciones[nota]*octava;
+  let frecuenciaNota=arrayFrecuencias2[nota];
 
   filtrosLow[src].type = "lowpass";
   if(habLow1){
@@ -541,7 +545,7 @@ function transponer(st){
 
   if(st==0)trans=0;
   
-  for(i=0;i<arrayRelaciones.length;i++)arrayRelaciones[i]=arrayRelaciones2[i+6+trans];
+  for(i=0;i<arrayFrecuencias2.length;i++)arrayRelaciones[i]=arrayRelaciones2[i+6+trans];
   
   if(trans<=0)document.querySelector("#trans").innerHTML=`${trans} st`;
   else document.querySelector("#trans").innerHTML=`+${trans} st`;
@@ -792,7 +796,7 @@ function clickFX(){
 
 function silenciar(){
 
-  for(i=0;i<=24;i++){
+  for(i=0;i<=arrayFrecuencias2.length;i++){
     try{
       detener(i);
       sonando[i]=false;
@@ -967,7 +971,7 @@ function clickear(event){
   if(mouseX>701)nota=24;
   if(mouseX<10)nota=0;
 
-  reproducir(nota);
+  reproducir(nota+12+octava*12+trans);
 
   notasClick[dedo]=nota;
 
@@ -984,7 +988,7 @@ function detenerClick(event){
     }
   }
 
-  let notaClick=notasClick[dedo]
+  let notaClick=notasClick[dedo]+12+octava*12+trans;
 
   let srcAux=ultimoSource[notaClick];
 

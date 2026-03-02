@@ -28,25 +28,32 @@ function muestreo(){
   for(i=0;i<25;i++){
     if(i==0||i==2||i==4||i==5||i==7||i==9||i==11||i==12||i==14||i==16||i==17||i==19||i==21||i==23||i==24){
 
+      let notaReal=(i+12+octava*12+trans);
+
       ctxTeclado.fillStyle="rgba(131, 131, 131, 1)";
       ctxTeclado.fillStyle="rgba(140, 140, 140, 1)";
       ctxTeclado.fillRect(posX, 3, 47, 200);
-      if(apretando[i]){
+      if(apretando[notaReal]){
         ctxTeclado.fillStyle="rgba(0,0,0,0.25)";
         ctxTeclado.fillRect(posX, 3, 47, 200);
         ctxTeclado.fillStyle="rgba(0, 0, 0, 0.3)";
         ctxTeclado.strokeStyle="rgba(50,50,50, 0)";
 
+        ctxTeclado.fillStyle="black";
+        ctxTeclado.fillRect(posX, 202, 47, 1);
+
+        ctxTeclado.fillStyle="rgba(0, 0, 0, 0.3)"
+
         ctxTeclado.beginPath();
 
         if(i==4||i==11||i==16||i==23){
-          if(!apretando[i+1]){
+          if(!apretando[notaReal+1]){
             ctxTeclado.lineTo(posX+47,0);
             ctxTeclado.lineTo(posX+30,203);
             ctxTeclado.lineTo(posX+47,203);
           }
         }else{
-          if(!apretando[i+2]){
+          if(!apretando[notaReal+2]){
             ctxTeclado.lineTo(posX+47,115);
             ctxTeclado.lineTo(posX+30,203);
             ctxTeclado.lineTo(posX+47,203);
@@ -59,9 +66,9 @@ function muestreo(){
       }
 
       ctxTeclado.fillStyle="rgba(255, 255, 255, 0.5)";
-      if(!apretando[i])ctxTeclado.fillRect(posX+45,3,2,200);
+      if(!apretando[notaReal])ctxTeclado.fillRect(posX+45,3,2,200);
       ctxTeclado.fillStyle="rgba(0, 0, 0, 0.5)";
-      if(!apretando[i])ctxTeclado.fillRect(posX,3,1,200);
+      if(!apretando[notaReal])ctxTeclado.fillRect(posX,3,1,200);
 
       posX+=50;
 
@@ -70,6 +77,9 @@ function muestreo(){
 
   for(i=0;i<25;i++){
     if(i==1||i==3||i==6||i==8||i==10||i==13||i==15||i==18||i==20||i==22){
+
+      notaReal=(i+12+octava*12+trans);
+
       if(i==6||i==13||i==18)posX2+=50;
 
       ctxTeclado.fillStyle="rgba(25, 25, 25, 1)";
@@ -81,7 +91,7 @@ function muestreo(){
       ctxTeclado.fillStyle="rgba(255, 255, 255, 0.3)";
       ctxTeclado.fillRect(posX2+30,5,2,110);
 
-      if(apretando[i]){
+      if(apretando[notaReal]){
         ctxTeclado.fillStyle="rgba(255,255,255,0.1)";
         ctxTeclado.fillRect(posX2, 3, 37, 120);
       }
@@ -91,8 +101,8 @@ function muestreo(){
 
       ctxTeclado.beginPath();
       ctxTeclado.lineTo(posX2,5);
-      if(!apretando[i]){
-        if(!apretando[i-1]){
+      if(!apretando[notaReal]){
+        if(!apretando[notaReal-1]){
           ctxTeclado.lineTo(posX2-8,10);
           ctxTeclado.lineTo(posX2-12,118);
         }else{

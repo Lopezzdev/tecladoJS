@@ -21,9 +21,9 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
       for(let i=0;i<5;i++){
 
         setTimeout(() => {
-          reproducir(12);
-          reproducir(16);
-          reproducir(19);
+          reproducir(trans+12+octava*12+12);
+          reproducir(trans+12+octava*12+16);
+          reproducir(trans+12+octava*12+19);
           muestreo();
           document.querySelector(`#${arrayAux[i]}`).style.cssText="animation: foco 0.8s infinite ease;"
         }, 1000*i+1000);
@@ -47,8 +47,8 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
       for(let i=0;i<5;i++){
         
         setTimeout(() => {
-          reproducir(16);
-          reproducir(23);
+          reproducir(trans+12+octava*12+16);
+          reproducir(trans+12+octava*12+23);
           muestreo();
         }, 1000*i+1000);
 
@@ -76,9 +76,9 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
       for(let i=0;i<5;i++){
         
         setTimeout(() => {
-          reproducir(13);
-          reproducir(16);
-          reproducir(19);
+          reproducir(trans+12+octava*12+13);
+          reproducir(trans+12+octava*12+16);
+          reproducir(trans+12+octava*12+19);
           muestreo();
         }, 1000*i+1000);
 
@@ -133,14 +133,14 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
           boolFX[i]=1;
 
           muestreoFX();
-          reproducir(12);
-          reproducir(16);
-          reproducir(19);
-          reproducir(23);
+          reproducir(trans+12+octava*12+12);
+          reproducir(trans+12+octava*12+16);
+          reproducir(trans+12+octava*12+19);
+          reproducir(trans+12+octava*12+23);
           muestreo();
 
           if(i==2){
-            setTimeout(()=>detener(12),20)
+            setTimeout(()=>detener(trans+12+octava*12+12),20)
           }
 
           if(i==3)moverTut(185,450,60,"Y se manejan de<br>forma independiente");
@@ -148,10 +148,10 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
         }, 2000*i+1000);
 
         setTimeout(() => {
-          detener(12);
-          detener(16);
-          detener(19);
-          detener(23);
+          detener(trans+12+octava*12+12);
+          detener(trans+12+octava*12+16);
+          detener(trans+12+octava*12+19);
+          detener(trans+12+octava*12+23);
           if(i==6){
             document.querySelector("#bloqueoTut").style.display="none";
             document.querySelector(`#botFX`).style.cssText="animation: none;"
@@ -174,13 +174,13 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
         
         setTimeout(() => {
 
-          reproducir(6);
-          reproducir(10);
-          reproducir(13);
-          reproducir(15);
+          reproducir(trans+12+octava*12+6);
+          reproducir(trans+12+octava*12+10);
+          reproducir(trans+12+octava*12+13);
+          reproducir(trans+12+octava*12+15);
           muestreo();
 
-          setTimeout(()=>{detener(6);detener(10);detener(13);detener(15);},500);
+          setTimeout(()=>{detener(trans+12+octava*12+6);detener(trans+12+octava*12+10);detener(trans+12+octava*12+13);detener(trans+12+octava*12+15);},500);
 
         }, 2000*i+1000);
 
@@ -254,11 +254,11 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
           boolFX[i]=1;
 
           muestreoFX();
-          reproducir(12);
+          reproducir(trans+12+octava*12+12);
           muestreo();
 
           if(i==2){
-            setTimeout(()=>{detener(12);p();},100)
+            setTimeout(()=>{detener(trans+12+octava*12+12);p();},100)
           }
 
           if(i==3)moverTut(185,-450,60,"Y se manejan de<br>forma independiente");
@@ -266,7 +266,7 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
         }, 2000*i+1000);
 
         setTimeout(() => {
-          detener(12);
+          detener(trans+12+octava*12+12);
           if(i==6){
             document.querySelector("#bloqueoTut").style.display="none";
             document.querySelector(`#mas1st`).style.cssText="animation: none;"
@@ -293,12 +293,12 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
         
         setTimeout(() => {
 
-          reproducir(15);
-          reproducir(18);
-          reproducir(22);
+          reproducir(trans+12+octava*12+15);
+          reproducir(trans+12+octava*12+18);
+          reproducir(trans+12+octava*12+22);
           muestreo();
 
-          setTimeout(()=>{detener(15);detener(18);detener(22);},1000);
+          setTimeout(()=>{detener(trans+12+octava*12+15);detener(trans+12+octava*12+18);detener(trans+12+octava*12+22);},1000);
           
           muestreoEnv1();
 
@@ -349,12 +349,12 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
           muestreoEcu();
           clickEcu();
 
-          reproducir(15);
-          reproducir(17);
-          reproducir(22);
+          reproducir(trans+12+octava*12+15);
+          reproducir(trans+12+octava*12+17);
+          reproducir(trans+12+octava*12+22);
           muestreo();
 
-          setTimeout(()=>{detener(15);detener(17);detener(22);},100);
+          setTimeout(()=>{detener(trans+12+octava*12+15);detener(trans+12+octava*12+17);detener(trans+12+octava*12+22);},100);
           
         }, 1000*i+500);
 
@@ -398,12 +398,12 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
 
           muestreoEnv1();
 
-          reproducir(15);
-          reproducir(17);
-          reproducir(22);
+          reproducir(trans+12+octava*12+15);
+          reproducir(trans+12+octava*12+17);
+          reproducir(trans+12+octava*12+22);
           muestreo();
 
-          setTimeout(()=>{detener(15);detener(17);detener(22);},800);
+          setTimeout(()=>{detener(trans+12+octava*12+15);detener(trans+12+octava*12+17);detener(trans+12+octava*12+22);},800);
           
         }, 2000*i+1000);
 
@@ -458,12 +458,12 @@ document.querySelector("#saltar").addEventListener("mousedown",()=>{
 
           mostrarCustom();
 
-          reproducir(15);
-          reproducir(17);
-          reproducir(22);
+          reproducir(trans+12+octava*12+15);
+          reproducir(trans+12+octava*12+17);
+          reproducir(trans+12+octava*12+22);
           muestreo();
 
-          setTimeout(()=>{detener(15);detener(17);detener(22);},800);
+          setTimeout(()=>{detener(trans+12+octava*12+15);detener(trans+12+octava*12+17);detener(trans+12+octava*12+22);},800);
           
         }, 2000*i+1000);
 

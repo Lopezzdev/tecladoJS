@@ -34,10 +34,10 @@ document.addEventListener("keydown",(event)=>{
   event.preventDefault();
 
   for(i=0;i<letras.length;i++){
-    if(event.key==letras[i]&&!apretando[i])reproducir(i);
+    if(event.key==letras[i]&&!apretando[i+36]){reproducir(i+12+octava*12+trans);}
   }
   for(i=0;i<letras2.length;i++){
-    if(event.key==letras2[i]&&!apretando[i+12])reproducir(i+12);
+    if(event.key==letras2[i]&&!apretando[i+48])reproducir(i+24+octava*12+trans);
   }
 
   // console.log(event.key);
@@ -51,10 +51,10 @@ document.addEventListener("keydown",(event)=>{
 })
 document.addEventListener("keyup",(event)=>{
   for(i=0;i<letras.length;i++){
-    if(event.key==letras[i])detener(i);
+    if(event.key==letras[i])detener(i+12+octava*12+trans);
   }
   for(i=0;i<letras2.length;i++){
-    if(event.key==letras2[i])detener(i+12);
+    if(event.key==letras2[i])detener(i+24+octava*12)+trans;
   }
   muestreo();
 })

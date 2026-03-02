@@ -391,7 +391,7 @@ canvas{
 #canvaPrueba{
     margin-top: 20px;
     background-color: #141414;
-    /* display: none; */
+    display: none;
 }
 
 input{
